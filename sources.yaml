@@ -10,12 +10,14 @@ sources:
     type: html
     url: https://jinjibu.jp/news/
     link_pattern: '^https://jinjibu\.jp/news/detl/\d+/'
+    title_strip: '^ニュース\s+'
     category: 人事情報サイト
 
   - name: 日本の人事部（記事）
     type: html
     url: https://jinjibu.jp/article/
     link_pattern: '^https://jinjibu\.jp/article/detl/[\w-]+/\d+/'
+    title_strip: '^記事\s+'
     category: 人事情報サイト
 
   - name: HRプロ（トレンドニュース）
@@ -23,12 +25,14 @@ sources:
     url: https://www.hrpro.co.jp/trend_news_list.php
     link_pattern: 'trend_news\.php\?news_no=\d+'
     category: 人事情報サイト
+    enabled: false   # 一覧がJavaScript描画のため取得できない
 
   - name: HRプロ（コラム・インタビュー）
     type: html
     url: https://www.hrpro.co.jp/series_top.php
     link_pattern: 'series_detail\.php\?t_no=\d+'
     category: 人事情報サイト
+    enabled: false   # 一覧がJavaScript描画のため取得できない
 
   - name: HRog
     type: rss
@@ -50,6 +54,7 @@ sources:
     type: rss
     url: https://r3sjp.substack.com/feed
     category: 人事情報サイト
+    enabled: false   # SubstackがGitHub Actionsからのアクセスを拒否(403)
 
   # ── 雑誌 ─────────────────────────────────
   - name: DIAMONDハーバード・ビジネス・レビュー

@@ -200,6 +200,9 @@ def collect_source(src: dict) -> list[tuple[str, str, datetime | None]]:
         entries = collect_rss(src, r.content)
     else:
         entries = collect_html(src, r.content, r.url)
+    strip = src.get("title_strip")
+    if strip:
+        entries = [(re.sub(strip, "", t).strip() or t, u, d) for t, u, d in entries]
     kws = src.get("include_keywords")
     if kws:
         entries = [e for e in entries if any(k in e[0] for k in kws)]
