@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HR News Digest</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --surface: #ffffff; --ink: #1d1d1b; --sub: #6b6a64; --line: #e4e2db;
+    --accent: #1f5c4a; --accent-soft: #e3eee9; --warn: #a14a1a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --surface: #1f1f1d; --ink: #ecebe6; --sub: #9c9a92; --line: #33332f;
+            --accent: #7cc4a8; --accent-soft: #23332d; --warn: #e0905e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+         line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  header { padding: 40px 20px 20px; max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 26px; letter-spacing: .02em; margin: 0 0 4px; }
+  .updated { color: var(--sub); font-size: 13px; }
+  .controls { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent);
+              backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .controls-inner { max-width: 880px; margin: 0 auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 10px; }
+  input[type=search] { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px;
+                       background: var(--surface); color: var(--ink); font-size: 15px; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+          padding: 5px 12px; border-radius: 999px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  main { max-width: 880px; margin: 0 auto; padding: 8px 20px 60px; }
+  .day { margin-top: 28px; }
+  .day h2 { font-size: 13px; font-weight: 600; color: var(--sub); letter-spacing: .06em; margin: 0 0 8px; }
+  ul { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  li + li { border-top: 1px solid var(--line); }
+  li a { display: block; padding: 14px 16px; color: inherit; text-decoration: none; }
+  li a:hover { background: var(--accent-soft); }
+  .title { font-size: 15.5px; font-weight: 500; }
+  .meta { margin-top: 4px; font-size: 12px; color: var(--sub); display: flex; gap: 8px; flex-wrap: wrap; }
+  .src { color: var(--accent); font-weight: 600; }
+  .new { background: var(--accent); color: var(--bg); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+  .empty { color: var(--sub); text-align: center; padding: 48px 0; }
+  details { margin-top: 40px; font-size: 13px; color: var(--sub); }
+  details table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  details td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+  details a { color: var(--accent); }
+  .err { color: var(--warn); }
+</style>
+</head>
+<body>
+<header>
+  <h1>HR News Digest</h1>
+  <div class="updated" id="updated"></div>
+</header>
+<div class="controls"><div class="controls-inner">
+  <input type="search" id="q" placeholder="キーワードで絞り込み（例：採用、評価制度、AI）">
+  <div class="chips" id="cats"></div>
+  <div class="chips" id="srcs"></div>
+</div></div>
+<main id="list"></main>
+<main><details id="status"><summary>収集元とステータス</summary><table id="srcTable"></table></details></main>
+
+<script>
+const DATA = {"items": [], "meta": {"updated": "2026-11-26 18:42", "sources": [{"name": "日本の人事部（ニュース）", "category": "人事情報サイト", "url": "https://jinjibu.jp/news/", "enabled": true, "error": null}, {"name": "日本の人事部（記事）", "category": "人事情報サイト", "url": "https://jinjibu.jp/article/", "enabled": true, "error": null}, {"name": "HRプロ（トレンドニュース）", "category": "人事情報サイト", "url": "https://www.hrpro.co.jp/trend_news_list.php", "enabled": true, "error": null}, {"name": "HRプロ（コラム・インタビュー）", "category": "人事情報サイト", "url": "https://www.hrpro.co.jp/series_top.php", "enabled": true, "error": null}, {"name": "HRog", "category": "人事情報サイト", "url": "https://hrog.net/feed/", "enabled": true, "error": null}, {"name": "労基旬報オンライン", "category": "人事情報サイト", "url": "https://roukijp.jp/?feed=rss2", "enabled": true, "error": null}, {"name": "フライヤー", "category": "人事情報サイト", "url": "https://www.flierinc.com/", "enabled": true, "error": null}, {"name": "令三社", "category": "人事情報サイト", "url": "https://r3sjp.substack.com/feed", "enabled": true, "error": null}, {"name": "DIAMONDハーバード・ビジネス・レビュー", "category": "雑誌", "url": "https://dhbr.diamond.jp/list/feed/rss", "enabled": true, "error": null}, {"name": "企業と人材（産労総合研究所）", "category": "雑誌", "url": "https://www.sanro.co.jp/news/", "enabled": true, "error": null}, {"name": "RMS Message（リクルートマネジメントソリューションズ）", "category": "雑誌", "url": "https://www.recruit-ms.co.jp/issue/", "enabled": false, "error": null}, {"name": "HITO（パーソル総合研究所）", "category": "雑誌", "url": "https://rc.persol-group.co.jp/thinktank/", "enabled": false, "error": null}, {"name": "労政時報", "category": "雑誌", "url": "https://www.rosei.jp/news", "enabled": false, "error": null}, {"name": "ひつじんじ（HR CAREER LAB）", "category": "コミュニティ", "url": "https://note.com/hr_career_lab/rss", "enabled": true, "error": null}, {"name": "みんなの採用ラボ", "category": "コミュニティ", "url": "https://note.com/yokochidesu/rss", "enabled": true, "error": null}, {"name": "人事のへや", "category": "コミュニティ", "url": "https://note.com/aotatsutomu/rss", "enabled": true, "error": null}]}};
+const state = { q: "", cat: "すべて", src: null };
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const WEEK = ["日","月","火","水","木","金","土"];
+
+// 日付はデータ側のJST表記（YYYY-MM-DD…）で揃える。閲覧者のタイムゾーンに左右されないように
+const jstDay = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
+function dayLabel(iso) {
+  const key = iso.slice(0, 10);
+  const [y, m, d] = key.split("-").map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const diff = Math.round((Date.parse(jstDay(Date.now())) - Date.parse(key)) / 864e5);
+  const base = `${m}月${d}日（${WEEK[wd]}）`;
+  return diff === 0 ? `今日 · ${base}` : diff === 1 ? `昨日 · ${base}` : base;
+}
+
+function chips(el, values, current, onPick) {
+  el.innerHTML = values.map(v => `<button class="chip" aria-pressed="${v === current}">${esc(v)}</button>`).join("");
+  [...el.children].forEach((b, i) => b.onclick = () => onPick(values[i]));
+}
+
+function render() {
+  const items = DATA.items;
+  const cats = ["すべて", ...new Set(items.map(i => i.category).filter(Boolean))];
+  chips($("cats"), cats, state.cat, v => { state.cat = v; state.src = null; render(); });
+  const inCat = items.filter(i => state.cat === "すべて" || i.category === state.cat);
+  const srcs = [...new Set(inCat.map(i => i.source))];
+  chips($("srcs"), srcs, state.src, v => { state.src = state.src === v ? null : v; render(); });
+
+  const q = state.q.trim().toLowerCase();
+  const shown = inCat.filter(i => (!state.src || i.source === state.src) &&
+                                  (!q || i.title.toLowerCase().includes(q) || i.source.toLowerCase().includes(q)));
+  if (!shown.length) { $("list").innerHTML = `<p class="empty">該当する記事はありません</p>`; return; }
+
+  const recent = Date.now() - 36 * 3600e3;
+  const groups = new Map();
+  for (const it of shown.slice(0, 400)) {
+    const key = dayLabel(it.published);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(it);
+  }
+  $("list").innerHTML = [...groups].map(([day, its]) => `
+    <section class="day"><h2>${esc(day)}</h2><ul>
+      ${its.map(it => `<li><a href="${esc(it.url)}" target="_blank" rel="noopener">
+        <div class="title">${esc(it.title)}</div>
+        <div class="meta"><span class="src">${esc(it.source)}</span>
+          ${new Date(it.found_at) > recent ? '<span class="new">NEW</span>' : ""}</div>
+      </a></li>`).join("")}
+    </ul></section>`).join("");
+}
+
+$("updated").textContent = `最終更新 ${DATA.meta.updated}（${DATA.items.length}件）`;
+$("srcTable").innerHTML = DATA.meta.sources.map(s => `<tr>
+  <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></td>
+  <td>${esc(s.category)}</td>
+  <td>${!s.enabled ? "停止中" : s.error ? `<span class="err">${esc(s.error)}</span>` : "OK"}</td></tr>`).join("");
+$("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+render();
+</script>
+</body>
+</html>
