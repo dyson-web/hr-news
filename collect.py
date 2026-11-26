@@ -288,6 +288,10 @@ def main() -> int:
 
     sources = yaml.safe_load((ROOT / "sources.yaml").read_text(encoding="utf-8"))["sources"]
     items = load_items()
+    if not items and not args.seed:
+        # 初回はまだ既読が何もない。全記事をSlackに流さないよう、自動で既読登録だけにする
+        print("初回実行のため、既存記事を既読登録します（Slack投稿なし）", file=sys.stderr)
+        args.seed = True
     known = {it["id"] for it in items}
     now = datetime.now(JST)
     new_items: list[Item] = []

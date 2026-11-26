@@ -48,11 +48,9 @@ JSHRM・グローバル人事塾・壺中人事塾・人事図書館などのコ
 ### 4. GitHub Pages を有効化
 **Settings → Pages** → Source: *Deploy from a branch* → Branch: `main` / フォルダ: `/docs`
 
-### 5. 初回は「既読登録」だけ実行する
-最初に普通に実行すると、各メディアの既存記事（数十〜百件以上）がまとめてSlackに流れてしまいます。
-**Actions → HR news collect → Run workflow** で mode に `seed` と入れて実行してください。今ある記事を既読として登録し、サイトだけ生成します。
-
-以降は平日 8:47 / 17:47 に自動で動き、新着だけがSlackに届きます。
+### 5. 初回実行（自動）
+`sources.yaml` や `collect.py` を push すると自動で実行されます。初回（`data/items.json` が空のとき）は既存記事を既読登録するだけで、Slackには流しません。
+以降は平日 8:47 / 17:47 に自動で動き、新着だけがSlackに届きます。Slackを使わずサイトだけで見る場合は、手順2・3は不要です。
 
 > 投稿内容を事前に見たいときは mode に `dry-run` と入れて実行すると、Slackに送らずログに出力します。
 

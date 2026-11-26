@@ -5,6 +5,10 @@ on:
     # 平日 8:47 / 17:47 (JST)。cron は UTC 表記
     - cron: "47 23 * * 0-4"
     - cron: "47 8 * * 1-5"
+  # 設定やコードを変えたときにもすぐ反映（ボットが更新する data/ docs/ では動かない）
+  push:
+    branches: [main]
+    paths: [sources.yaml, collect.py, templates/**, .github/workflows/**]
   workflow_dispatch:
     inputs:
       mode:
