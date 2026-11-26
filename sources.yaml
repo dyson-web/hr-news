@@ -1,0 +1,103 @@
+# 収集対象メディア
+#  type: rss  … RSS/Atomフィードを読む（推奨。サイトへの負荷も小さい）
+#  type: html … 一覧ページから、link_pattern（正規表現）に合う記事リンクを抜き出す
+#  enabled: false のものは収集しない（一覧がJavaScript描画・会員限定などで取れないもの）
+#  include_keywords を書くと、タイトルにどれかが含まれる記事だけを流す
+
+sources:
+  # ── 人事情報サイト ─────────────────────────
+  - name: 日本の人事部（ニュース）
+    type: html
+    url: https://jinjibu.jp/news/
+    link_pattern: '^https://jinjibu\.jp/news/detl/\d+/'
+    category: 人事情報サイト
+
+  - name: 日本の人事部（記事）
+    type: html
+    url: https://jinjibu.jp/article/
+    link_pattern: '^https://jinjibu\.jp/article/detl/[\w-]+/\d+/'
+    category: 人事情報サイト
+
+  - name: HRプロ（トレンドニュース）
+    type: html
+    url: https://www.hrpro.co.jp/trend_news_list.php
+    link_pattern: 'trend_news\.php\?news_no=\d+'
+    category: 人事情報サイト
+
+  - name: HRプロ（コラム・インタビュー）
+    type: html
+    url: https://www.hrpro.co.jp/series_top.php
+    link_pattern: 'series_detail\.php\?t_no=\d+'
+    category: 人事情報サイト
+
+  - name: HRog
+    type: rss
+    url: https://hrog.net/feed/
+    category: 人事情報サイト
+
+  - name: 労基旬報オンライン
+    type: rss
+    url: https://roukijp.jp/?feed=rss2
+    category: 人事情報サイト
+
+  - name: フライヤー
+    type: html
+    url: https://www.flierinc.com/
+    link_pattern: '^https://www\.flierinc\.com/release/\d+'
+    category: 人事情報サイト
+
+  - name: 令三社
+    type: rss
+    url: https://r3sjp.substack.com/feed
+    category: 人事情報サイト
+
+  # ── 雑誌 ─────────────────────────────────
+  - name: DIAMONDハーバード・ビジネス・レビュー
+    type: rss
+    url: https://dhbr.diamond.jp/list/feed/rss
+    category: 雑誌
+    # 人事・組織に関係しそうな記事だけに絞る（不要なら行ごと消す）
+    include_keywords: [人事, 組織, 人材, 採用, 育成, リーダー, マネジャー, マネジメント, 評価, 報酬, 働き方, キャリア, チーム, 従業員, 社員, エンゲージメント, 文化, 変革, 心理的安全]
+
+  - name: 企業と人材（産労総合研究所）
+    type: html
+    url: https://www.sanro.co.jp/news/
+    link_pattern: '^https://www\.sanro\.co\.jp/news/nc?\d+\.html'
+    category: 雑誌
+
+  - name: RMS Message（リクルートマネジメントソリューションズ）
+    type: html
+    url: https://www.recruit-ms.co.jp/issue/
+    link_pattern: '^https://www\.recruit-ms\.co\.jp/issue/(column|interview|inquiry|feature)/\d+/'
+    category: 雑誌
+    enabled: false   # 一覧がJavaScriptで描画されるため静的取得では空になる
+
+  - name: HITO（パーソル総合研究所）
+    type: html
+    url: https://rc.persol-group.co.jp/thinktank/
+    link_pattern: '^https://rc\.persol-group\.co\.jp/thinktank/(column|data|assets)/'
+    category: 雑誌
+    enabled: false   # 同上
+
+  - name: 労政時報
+    type: html
+    url: https://www.rosei.jp/news
+    link_pattern: '^https://www\.rosei\.jp/news/'
+    category: 雑誌
+    enabled: false   # 記事本体は会員制（WEB労政時報）。お知らせ欄も更新が少ない
+
+  # ── コミュニティ（note） ───────────────────
+  - name: ひつじんじ（HR CAREER LAB）
+    type: rss
+    url: https://note.com/hr_career_lab/rss
+    category: コミュニティ
+
+  - name: みんなの採用ラボ
+    type: rss
+    url: https://note.com/yokochidesu/rss
+    category: コミュニティ
+
+  - name: 人事のへや
+    type: rss
+    url: https://note.com/aotatsutomu/rss
+    category: コミュニティ
