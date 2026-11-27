@@ -48,7 +48,15 @@ a { color: inherit; }
 .tab[aria-selected=true] { color: var(--ink); border-bottom-color: var(--line-strong); }
 .tab .n { font-weight: 400; font-size: 12px; margin-left: 4px; }
 .filters { display: flex; gap: 8px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
-.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; mask-image: linear-gradient(90deg, #000 92%, transparent); }
+.scroller { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; scroll-behavior: smooth; }
+.nav { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+       display: grid; place-items: center; cursor: pointer; padding: 0; }
+.nav svg { width: 16px; height: 16px; }
+.nav:hover:not(:disabled) { border-color: var(--ink); }
+.nav:disabled { opacity: .3; cursor: default; }
+.chip.topic { border-color: var(--ink); color: var(--ink); font-weight: 700; }
+.chip.topic span { margin-left: 6px; color: var(--ink-3); }
 .chips::-webkit-scrollbar { display: none; }
 .chip { flex: none; border: 1px solid var(--line); background: var(--bg); padding: 3px 12px; border-radius: 999px;
         font-size: 13px; cursor: pointer; white-space: nowrap; color: var(--ink-2); }
@@ -222,8 +230,11 @@ footer a { color: var(--ink-2); }
   .bar { position: static; }
   .bar-inner, .wrap, footer { padding-left: 16px; padding-right: 16px; }
   .tabs { gap: 22px; }
-  .filters { flex-wrap: wrap; }
-  .chips { flex-basis: 100%; order: 3; }
+  .filters { gap: 6px; }
+  .toggle { font-size: 12.5px; gap: 4px; }
+  .toggle .long { display: none; }
+  .mode-hot .filters { flex-wrap: wrap; }
+  .mode-hot .periods { order: -1; }
   .title { font-size: 15.5px; }
   .thumb { width: 84px; height: 84px; }
   .row { column-gap: 12px; padding: 14px 0; }
@@ -256,9 +267,12 @@ footer a { color: var(--ink-2); }
     <div class="periods" role="group" aria-label="期間">
       <button data-p="d1">24時間</button><button data-p="d7">7日間</button><button data-p="d30">30日間</button>
     </div>
-    <div class="chips" id="topics" role="group" aria-label="トピック"></div>
-    <select class="sel" id="src" aria-label="媒体で絞り込む"></select>
-    <label class="toggle"><input type="checkbox" id="unread">未読のみ</label>
+    <div class="scroller">
+      <button class="nav" id="chipPrev" aria-label="左へ移動"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="chips" id="chips" role="group" aria-label="媒体で絞り込む"></div>
+      <button class="nav" id="chipNext" aria-label="右へ移動"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="unread">未読<span class="long">のみ</span></label>
   </div>
 </div></div>
 
@@ -311,6 +325,7 @@ const ICON_SAVE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_SAVED = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
 const PERIOD_LABEL = { d1: "24時間", d7: "7日間", d30: "30日間" };
 const PAGE = 60;
+const shortSrc = (s) => s.replace(/（.*?）/g, "").trim();
 
 // ── 端末内の保存（使えない環境でも動くように） ──
 const store = {
@@ -347,7 +362,7 @@ const dateText = (it) => it.date_unknown ? "日付不明" : (() => { const d = n
 // ── 絞り込み ──
 function matches(it) {
   if (S.topic && !(it.tags || []).includes(S.topic)) return false;
-  if (S.src && it.source !== S.src) return false;
+  if (S.src && shortSrc(it.source) !== S.src) return false;
   if (S.unread && readSet.has(it.id)) return false;
   if (S.q) {
     const hay = `${it.title} ${it.digest || ""} ${it.desc || ""} ${(it.summary || []).join(" ")} ${it.source} ${(it.tags || []).join(" ")}`.toLowerCase();
@@ -377,7 +392,6 @@ function thumbHTML(it, cls = "thumb") {
   if (it.image) return `<div class="${cls}"><img src="${esc(it.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg');this.parentNode.textContent=this.parentNode.dataset.src||''"></div>`;
   return `<div class="${cls} noimg">${esc(shortSrc(it.source))}</div>`;
 }
-const shortSrc = (s) => s.replace(/（.*?）/g, "");
 function buzzHTML(it) {
   const out = [];
   if (it.hb) out.push(`<span class="buzzc${it.heat >= 3 ? " hot" : ""}"><i></i>${it.hb} ブクマ</span>`);
@@ -404,7 +418,7 @@ function render() {
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.mode === S.mode));
   document.querySelectorAll(".periods button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === S.period));
   $("#savedN").textContent = savedSet.size ? savedSet.size : "";
-  renderTopics();
+  renderChips();
   const list = currentList();
   S.list = list.map(it => it.id);
   const main = $("#main");
@@ -455,14 +469,27 @@ function renderSide() {
   $("#mini").innerHTML = list.slice(0, 7).map(it => `<li data-id="${it.id}"><div><div class="t">${esc(it.title)}</div><div class="s">${esc(shortSrc(it.source))}　${signalText(it, p, true).join("　")}</div></div>${it.image ? `<img class="mt" src="${esc(it.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">` : `<span></span>`}</li>`).join("")
     || `<li style="cursor:default;display:block"><div class="s">話題のデータが集まると、ここに表示されます。</div></li>`;
 }
-function renderTopics() {
-  const base = ITEMS.filter(it => S.mode !== "new" || isFresh(it));
-  const counts = {};
-  base.forEach(it => (it.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
-  const topics = DATA.topics.filter(t => counts[t]);
-  $("#topics").innerHTML = `<button class="chip" aria-pressed="${!S.topic}" data-topic="">すべて</button>` +
-    topics.map(t => `<button class="chip" aria-pressed="${S.topic === t}" data-topic="${esc(t)}">${esc(t)}</button>`).join("");
+let MEDIA = [], lastTopic = null;
+function renderChips() {
+  const el = $("#chips"), keep = S.topic !== lastTopic ? 0 : el.scrollLeft;
+  lastTopic = S.topic;
+  const topicChip = S.topic ? `<button class="chip topic" data-topic="" aria-label="${esc(S.topic)}の絞り込みを解除">#${esc(S.topic)}<span aria-hidden="true">×</span></button>` : "";
+  el.innerHTML = topicChip + `<button class="chip" aria-pressed="${!S.src}" data-src="">すべて</button>` +
+    MEDIA.map(m => `<button class="chip" aria-pressed="${S.src === m}" data-src="${esc(m)}">${esc(m)}</button>`).join("");
+  el.scrollLeft = keep;
+  updateNav();
 }
+function updateNav() {
+  const el = $("#chips"), max = el.scrollWidth - el.clientWidth;
+  $("#chipPrev").disabled = el.scrollLeft <= 2;
+  $("#chipNext").disabled = el.scrollLeft >= max - 2;
+  const hide = max <= 2;
+  $("#chipPrev").hidden = hide; $("#chipNext").hidden = hide;
+}
+$("#chips").addEventListener("scroll", updateNav, { passive: true });
+window.addEventListener("resize", updateNav);
+$("#chipPrev").onclick = () => $("#chips").scrollBy({ left: -$("#chips").clientWidth * .7 });
+$("#chipNext").onclick = () => $("#chips").scrollBy({ left: $("#chips").clientWidth * .7 });
 
 // ── 詳細パネル ──
 function openItem(id, push = true) {
@@ -542,17 +569,18 @@ document.addEventListener("click", (e) => {
   const t = e.target;
   const save = t.closest("[data-save]"); if (save) { e.stopPropagation(); toggleSave(save.dataset.save); return; }
   const go = t.closest("[data-go]"); if (go) { setMode(go.dataset.go); return; }
+  const srcChip = t.closest("[data-src]");
+  if (srcChip) { S.src = srcChip.dataset.src; S.limit = PAGE; render(); srcChip.scrollIntoView?.({ block: "nearest", inline: "nearest" }); return; }
   const topic = t.closest("[data-topic]");
   if (topic) { S.topic = topic.dataset.topic || null; S.limit = PAGE; if (S.open) closeItem(); render(); return; }
   if (t.closest("[data-more]")) { S.limit += PAGE * 2; render(); return; }
-  if (t.closest("[data-reset]")) { S.topic = null; S.src = ""; S.q = ""; S.unread = false; $("#q").value = ""; $("#src").value = ""; $("#unread").checked = false; render(); return; }
+  if (t.closest("[data-reset]")) { S.topic = null; S.src = ""; S.q = ""; S.unread = false; $("#q").value = ""; $("#unread").checked = false; render(); return; }
   const row = t.closest("[data-id]"); if (row && !t.closest("a")) openItem(row.dataset.id);
 });
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 document.querySelectorAll(".periods button").forEach(b => b.onclick = () => { S.period = b.dataset.p; render(); });
 function setMode(m) { S.mode = m; S.limit = PAGE; if (S.open) closeItem(); render(); window.scrollTo({ top: 0 }); }
 $("#q").addEventListener("input", (e) => { S.q = e.target.value.trim(); S.limit = PAGE; render(); });
-$("#src").addEventListener("change", (e) => { S.src = e.target.value; render(); });
 $("#unread").addEventListener("change", (e) => { S.unread = e.target.checked; render(); });
 $("#scrim").onclick = () => closeItem();
 $("#dClose").onclick = () => closeItem();
@@ -613,12 +641,14 @@ function renderSources() {
     `<tr><td>はてなブックマーク</td><td>話題度</td><td>${f.hatena_error ? `<span class="err">${esc(f.hatena_error)}</span>` : "取得できています"}</td></tr>` +
     `<tr><td>AI要約</td><td>要約</td><td>${f.ai ? "有効" : "未設定（概要のみ表示）"}</td></tr>`;
 }
-fetch("data.json?v=c8c84f1d69").then(r => r.json()).then(d => {
+fetch("data.json?v=88d4e14790").then(r => r.json()).then(d => {
   DATA = d;
   ITEMS = d.items.slice().sort((a, b) => b.published.localeCompare(a.published));
   BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
-  const sources = [...new Set(ITEMS.map(i => i.source))];
-  $("#src").innerHTML = `<option value="">すべての媒体</option>` + sources.map(s => `<option>${esc(s)}</option>`).join("");
+  // 媒体の並び：HRog、日本の人事部を先頭に、残りは設定ファイルの順
+  const order = ["HRog", "日本の人事部", ...d.sources.map(x => shortSrc(x.name))];
+  const present = new Set(ITEMS.map(i => shortSrc(i.source)));
+  MEDIA = [...new Set(order)].filter(m => present.has(m));
   const dt = new Date(Date.parse(d.updated) + 9 * 3600e3);
   $("#updated").textContent = `${dt.getUTCMonth() + 1}月${dt.getUTCDate()}日 ${String(dt.getUTCHours()).padStart(2, "0")}:${String(dt.getUTCMinutes()).padStart(2, "0")} 更新`;
   renderSources();
