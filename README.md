@@ -128,6 +128,10 @@ pip install pytest && python -m pytest tests -q
 | `list_hr_media_and_topics` | 媒体・トピック一覧と最終更新時刻 |
 
 ### A. claude.ai（Web・スマホ）から使う：Cloudflare Workers に公開
+
+公開済み：`https://hr-news-mcp.web-tsutsui.workers.dev/mcp`（Cloudflare の GitHub 連携で `mcp/` を変更すると自動で再デプロイ）
+
+以下は GitHub Actions から公開する場合の手順（現在は Cloudflare 側の GitHub 連携で公開しているため不要）
 1. Cloudflare にログイン → My Profile → API Tokens → **Create Token** → テンプレート「Edit Cloudflare Workers」で作成
 2. Cloudflare ダッシュボード右側の **Account ID** をコピー
 3. GitHub の Settings → Secrets and variables → Actions → Secrets に

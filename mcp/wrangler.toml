@@ -1,6 +1,7 @@
 name = "hr-news-mcp"
 main = "worker.js"
 compatibility_date = "2026-11-01"
+workers_dev = true
 
 [vars]
 DATA_URL = "https://dyson-web.github.io/hr-news/data.json"
