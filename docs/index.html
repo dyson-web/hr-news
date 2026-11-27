@@ -83,7 +83,7 @@ a { color: inherit; }
 /* ── レイアウト ── */
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
 .side { position: sticky; top: 72px; align-self: start; margin-top: 26px; background: var(--sub-bg); border-radius: 10px; padding: 18px 18px 16px; }
-.mode-hot main, .mode-saved main { max-width: 820px; }
+
 
 /* ── 記事行（白地・罫線区切り・右サムネイル） ── */
 /* セクションラベル：小さく薄く、すぐ下のリストに寄せる */
@@ -500,8 +500,8 @@ function rowHTML(it, i) {
     <div class="txt">
       <h2 class="title">${esc(it.title)}</h2>
       ${it.digest ? `<p class="digest">${esc(it.digest)}</p>` : ""}
-      ${hot ? `<div class="why">${signalText(it, S.period).join("")}</div>` : ""}
-      <div class="meta"><span class="src">${esc(shortSrc(it.source))}</span><span>${it.date_unknown ? "" : rel(it.published)}</span>${hot ? "" : buzzHTML(it)}${tags}${it.read_min ? `<span>約${it.read_min}分</span>` : ""}${tglHTML(it)}<button class="save" aria-pressed="${saved}" aria-label="${saved ? "保存を外す" : "保存する"}" data-save="${it.id}">${saved ? ICON_SAVED : ICON_SAVE}</button></div>
+      ${hot ? `<div class="why">${signalText(it, S.period, true).map(x => `<b>${esc(x)}</b>`).join("")}</div>` : ""}
+      <div class="meta"><span class="src">${esc(shortSrc(it.source))}</span>${it.date_unknown ? "" : `<span>${rel(it.published)}</span>`}${hot ? "" : buzzHTML(it)}${tags}${it.read_min ? `<span>約${it.read_min}分</span>` : ""}${tglHTML(it)}<button class="save" aria-pressed="${saved}" aria-label="${saved ? "保存を外す" : "保存する"}" data-save="${it.id}">${saved ? ICON_SAVED : ICON_SAVE}</button></div>
     </div>
     ${thumbHTML(it)}
     ${openSum.has(it.id) ? sumHTML(it) : ""}
@@ -749,7 +749,7 @@ function renderSources() {
     `<tr><td>はてなブックマーク</td><td>話題度</td><td>${f.hatena_error ? `<span class="err">${esc(f.hatena_error)}</span>` : "取得できています"}</td></tr>` +
     `<tr><td>AI要約</td><td>要約</td><td>${f.ai ? "有効" : "未設定（概要のみ表示）"}</td></tr>`;
 }
-fetch("data.json?v=57e8bc1aae").then(r => r.json()).then(d => {
+fetch("data.json?v=d3953fe00c").then(r => r.json()).then(d => {
   DATA = d;
   ITEMS = d.items.slice().sort((a, b) => b.published.localeCompare(a.published));
   BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
