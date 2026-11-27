@@ -121,6 +121,28 @@ a { color: inherit; }
 .save svg { width: 19px; height: 19px; }
 
 
+
+/* ── 一覧内の要約トグル ── */
+.sumtgl { border: 0; background: var(--sub-bg); color: var(--ink-2); font-size: 12px; font-weight: 700; padding: 2px 8px 2px 10px; border-radius: 999px;
+          cursor: pointer; display: inline-flex; align-items: center; gap: 2px; }
+.sumtgl:hover { color: var(--ink); background: var(--line); }
+.sumtgl svg { width: 14px; height: 14px; transition: transform .18s; }
+.sumtgl[aria-expanded=true] { background: var(--ink); color: var(--bg); }
+.sumtgl[aria-expanded=true] svg { transform: rotate(180deg); }
+.sumbox { grid-column: 1 / -1; margin-top: 12px; background: var(--sub-bg); border-radius: 8px; padding: 14px 18px 12px; cursor: default; }
+.sumbox .dg { margin: 0 0 8px; font-weight: 700; font-size: 14.5px; line-height: 1.7; }
+.sumbox ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.sumbox li { position: relative; padding-left: 14px; font-size: 14px; line-height: 1.75; color: var(--ink-2); }
+.sumbox li::before { content: ""; position: absolute; left: 1px; top: .72em; width: 5px; height: 5px; background: var(--ink); }
+.sumbox .ds { margin: 0; font-size: 14px; line-height: 1.8; color: var(--ink-2); }
+.sumbox .ds small { display: block; font-size: 11.5px; color: var(--ink-3); margin-bottom: 2px; }
+.sumbox .acts { display: flex; gap: 16px; margin-top: 10px; font-size: 13px; font-weight: 700; }
+.sumbox .acts a, .sumbox .acts button { color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+.sumbox .acts a:hover, .sumbox .acts button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sumbox .acts svg { width: 14px; height: 14px; }
+.hot .sumbox { grid-column: 2 / -1; }
+@media (prefers-reduced-motion: no-preference) { .sumbox { animation: sumin .18s ease-out; } @keyframes sumin { from { opacity: 0; transform: translateY(-4px); } } }
+
 /* ── 話題ランキング ── */
 .hot .row { grid-template-columns: 44px minmax(0, 1fr) auto; }
 .hot .row { padding: 16px 0; }
@@ -339,7 +361,7 @@ footer a { color: var(--ink-2); }
   <details><summary>話題度の決め方と収集元</summary>
     <p>話題度は、はてなブックマーク数の伸びと、各メディア公式のアクセスランキング順位から算出しています。記事そのもののPVは公開されていないため、外から見える反応を代わりに使っています。要約はAIが作成したものです。正確な内容は元記事でご確認ください。</p>
     <table id="srcTable"></table>
-    <p class="keys">ショートカット：<kbd>/</kbd> 検索　<kbd>J</kbd><kbd>K</kbd> 移動　<kbd>Enter</kbd> 開く　<kbd>O</kbd> 元記事　<kbd>S</kbd> 保存　<kbd>Esc</kbd> 閉じる</p>
+    <p class="keys">ショートカット：<kbd>/</kbd> 検索　<kbd>J</kbd><kbd>K</kbd> 移動　<kbd>E</kbd> 要約を開閉　<kbd>Enter</kbd> 詳細　<kbd>O</kbd> 元記事　<kbd>S</kbd> 保存　<kbd>Esc</kbd> 閉じる</p>
   </details>
 </footer>
 
@@ -446,6 +468,30 @@ function buzzHTML(it) {
   if (it.rank) out.push(`<span class="buzzc hot"><i></i>${esc(rankName(it))}${it.rank.rank}位</span>`);
   return out.join("");
 }
+const openSum = new Set();
+const CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+const EXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+function tglHTML(it) {
+  const has = (it.summary || []).length || it.desc || it.digest;
+  if (!has) return "";
+  const open = openSum.has(it.id), label = (it.summary || []).length ? "要約" : "概要";
+  return `<button class="sumtgl" data-tgl="${it.id}" aria-expanded="${open}" aria-controls="sum-${it.id}">${label}${CHEV}</button>`;
+}
+function sumHTML(it) {
+  const pts = (it.summary || []).length ? `<ul>${it.summary.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const desc = !pts && it.desc ? `<p class="ds"><small>${esc(shortSrc(it.source))}による概要</small>${esc(it.desc)}</p>` : "";
+  return `<div class="sumbox" id="sum-${it.id}" data-stop>
+    ${it.digest ? `<p class="dg">${esc(it.digest)}</p>` : ""}${pts}${desc}
+    <div class="acts"><a href="${esc(it.url)}" target="_blank" rel="noopener" data-read="${it.id}">元記事を読む${EXT}</a><button data-open="${it.id}">詳しく見る</button></div>
+  </div>`;
+}
+function toggleSum(id) {
+  const row = document.querySelector(`.row[data-id="${id}"]`); const it = BY_ID[id];
+  if (!row || !it) return;
+  const btn = row.querySelector("[data-tgl]");
+  if (openSum.has(id)) { openSum.delete(id); row.querySelector(".sumbox")?.remove(); btn?.setAttribute("aria-expanded", "false"); }
+  else { openSum.add(id); row.insertAdjacentHTML("beforeend", sumHTML(it)); btn?.setAttribute("aria-expanded", "true"); readSet.add(id); persist(); }
+}
 function rowHTML(it, i) {
   const saved = savedSet.has(it.id), hot = S.mode === "hot";
   const tags = (it.tags || []).slice(0, 2).map(t => `<span class="tag">${esc(t)}</span>`).join("");
@@ -455,9 +501,10 @@ function rowHTML(it, i) {
       <h2 class="title">${esc(it.title)}</h2>
       ${it.digest ? `<p class="digest">${esc(it.digest)}</p>` : ""}
       ${hot ? `<div class="why">${signalText(it, S.period).join("")}</div>` : ""}
-      <div class="meta"><span class="src">${esc(shortSrc(it.source))}</span><span>${it.date_unknown ? "" : rel(it.published)}</span>${hot ? "" : buzzHTML(it)}${tags}${it.read_min ? `<span>約${it.read_min}分</span>` : ""}<button class="save" aria-pressed="${saved}" aria-label="${saved ? "保存を外す" : "保存する"}" data-save="${it.id}">${saved ? ICON_SAVED : ICON_SAVE}</button></div>
+      <div class="meta"><span class="src">${esc(shortSrc(it.source))}</span><span>${it.date_unknown ? "" : rel(it.published)}</span>${hot ? "" : buzzHTML(it)}${tags}${it.read_min ? `<span>約${it.read_min}分</span>` : ""}${tglHTML(it)}<button class="save" aria-pressed="${saved}" aria-label="${saved ? "保存を外す" : "保存する"}" data-save="${it.id}">${saved ? ICON_SAVED : ICON_SAVE}</button></div>
     </div>
     ${thumbHTML(it)}
+    ${openSum.has(it.id) ? sumHTML(it) : ""}
   </li>`;
 }
 function render() {
@@ -624,6 +671,10 @@ function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.ad
 document.addEventListener("click", (e) => {
   const t = e.target;
   const save = t.closest("[data-save]"); if (save) { e.stopPropagation(); toggleSave(save.dataset.save); return; }
+  const tgl = t.closest("[data-tgl]"); if (tgl) { toggleSum(tgl.dataset.tgl); return; }
+  const op = t.closest("[data-open]"); if (op) { openItem(op.dataset.open); return; }
+  const rd = t.closest("[data-read]"); if (rd) { readSet.add(rd.dataset.read); persist(); return; }
+  if (t.closest("[data-stop]")) return;
   const go = t.closest("[data-go]"); if (go) { setMode(go.dataset.go); return; }
   const srcChip = t.closest("[data-src]");
   if (srcChip) { S.src = srcChip.dataset.src; S.limit = PAGE; render(); srcChip.scrollIntoView?.({ block: "nearest", inline: "nearest" }); return; }
@@ -669,6 +720,7 @@ document.addEventListener("keydown", (e) => {
     rows[Math.max(0, Math.min(rows.length - 1, i))]?.focus();
   }
   else if ((k === "enter" || k === " ") && cur) { e.preventDefault(); openItem(cur.dataset.id); }
+  else if (k === "e" && cur) { e.preventDefault(); toggleSum(cur.dataset.id); }
   else if (k === "o") { const id = S.open || cur?.dataset.id; if (id) { readSet.add(id); persist(); window.open(BY_ID[id].url, "_blank", "noopener"); } }
   else if (k === "s") { const id = S.open || cur?.dataset.id; if (id) toggleSave(id); }
 });
