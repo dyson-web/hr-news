@@ -1,0 +1,12 @@
+{
+  "name": "hr-news-digest-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": { "hr-news-digest-mcp": "stdio.js" },
+  "scripts": {
+    "test": "node --test",
+    "deploy": "wrangler deploy"
+  },
+  "engines": { "node": ">=18" }
+}

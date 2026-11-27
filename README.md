@@ -113,3 +113,42 @@ python collect.py --dry-run --only 表示名
 pip install pytest && python -m pytest tests -q
 ```
 ネットワークなしで、RSS/HTMLのパース、重複排除、Slackメッセージ、サイト生成を確認します。
+
+## MCPサーバー（Claude から記事を引く）
+
+`mcp/` に、このサイトの記事データ（`docs/data.json`）を Claude から使うための MCP サーバーがあります。
+「今日の人事ニュースを教えて」「今週話題の採用関連記事は？」「人的資本開示の最近の記事をまとめて」のように頼めます。
+
+| ツール | できること |
+|---|---|
+| `get_latest_hr_news` | 新着（日数・媒体・トピックで絞り込み） |
+| `get_trending_hr_news` | 話題ランキング（24h / 7d / 30d） |
+| `search_hr_news` | キーワード・媒体・トピック・期間で検索 |
+| `get_hr_article` | 1件の詳細（要約・概要・話題度・元記事URL） |
+| `list_hr_media_and_topics` | 媒体・トピック一覧と最終更新時刻 |
+
+### A. claude.ai（Web・スマホ）から使う：Cloudflare Workers に公開
+1. Cloudflare にログイン → My Profile → API Tokens → **Create Token** → テンプレート「Edit Cloudflare Workers」で作成
+2. Cloudflare ダッシュボード右側の **Account ID** をコピー
+3. GitHub の Settings → Secrets and variables → Actions → Secrets に
+   `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を登録
+4. Actions → **Deploy MCP server** → Run workflow（以降は `mcp/` を変更すると自動で再デプロイ）
+5. ログに出る URL（`https://hr-news-mcp.<あなたのサブドメイン>.workers.dev`）の末尾に `/mcp` を付け、
+   claude.ai の 設定 → コネクタ → **カスタムコネクタを追加** に登録
+
+公開データしか扱わないため認証はありません（URLを知っていれば誰でも読めます）。
+
+### B. Claude Desktop / Claude Code から使う：ローカルで起動
+Node.js 18 以上があれば、追加のインストールは不要です。リポジトリを clone して、Claude Desktop の設定（`claude_desktop_config.json`）に追記します。
+
+```json
+{
+  "mcpServers": {
+    "hr-news": { "command": "node", "args": ["/path/to/hr-news/mcp/stdio.js"] }
+  }
+}
+```
+
+Claude Code なら `claude mcp add hr-news -- node /path/to/hr-news/mcp/stdio.js`。
+
+テスト：`cd mcp && node --test`
