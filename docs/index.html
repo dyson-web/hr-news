@@ -649,7 +649,7 @@ function renderSources() {
     `<tr><td>はてなブックマーク</td><td>話題度</td><td>${f.hatena_error ? `<span class="err">${esc(f.hatena_error)}</span>` : "取得できています"}</td></tr>` +
     `<tr><td>AI要約</td><td>要約</td><td>${f.ai ? "有効" : "未設定（概要のみ表示）"}</td></tr>`;
 }
-fetch("data.json?v=f02cbd1864").then(r => r.json()).then(d => {
+fetch("data.json?v=0ed269055d").then(r => r.json()).then(d => {
   DATA = d;
   ITEMS = d.items.slice().sort((a, b) => b.published.localeCompare(a.published));
   BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
