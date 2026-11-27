@@ -43,11 +43,19 @@ a { color: inherit; }
 .bar { position: sticky; top: 0; z-index: 20; background: var(--bg); transition: box-shadow .2s; }
 .bar.stuck { box-shadow: 0 1px 0 var(--line), 0 6px 16px rgb(0 0 0 / .05); }
 .bar-inner { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.tabs { display: flex; gap: 28px; }
-.tab { border: 0; background: none; padding: 13px 0 11px; font-weight: 700; font-size: 15px; color: var(--ink-3); cursor: pointer;
-       border-bottom: 3px solid transparent; }
-.tab[aria-selected=true] { color: var(--ink); border-bottom-color: var(--line-strong); }
-.tab .n { font-weight: 400; font-size: 12px; margin-left: 4px; }
+.savedlink { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px; border: 0; border-radius: 999px;
+             background: none; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--ink); }
+.savedlink:hover { background: var(--sub-bg); }
+.savedlink[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+.savedlink svg { width: 18px; height: 18px; }
+.savedlink .n { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 11.5px;
+                display: inline-grid; place-items: center; font-weight: 700; }
+.savedlink .n:empty { display: none; }
+.savedlink[aria-pressed=true] .n { background: var(--bg); color: var(--ink); }
+.back { border: 0; background: none; padding: 0; margin: 22px 0 0; font-size: 13.5px; color: var(--ink-2); cursor: pointer; display: inline-flex; align-items: center; gap: 2px; }
+.back:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.back svg { width: 16px; height: 16px; }
+.mode-hot .day:first-of-type, .mode-saved .day:first-of-type { padding-top: 8px; }
 .filters { display: flex; gap: 8px; align-items: center; padding: 10px 0 12px; }
 .scroller { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
 .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; scroll-behavior: smooth; }
@@ -73,7 +81,7 @@ a { color: inherit; }
 
 /* ── レイアウト ── */
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 80px; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; }
-.side { position: sticky; top: 118px; align-self: start; margin-top: 26px; background: var(--sub-bg); border-radius: 10px; padding: 18px 18px 16px; }
+.side { position: sticky; top: 72px; align-self: start; margin-top: 26px; background: var(--sub-bg); border-radius: 10px; padding: 18px 18px 16px; }
 .mode-hot .side, .mode-saved .side { display: none; }
 .mode-hot .wrap, .mode-saved .wrap { grid-template-columns: minmax(0, 760px); }
 @media (max-width: 1000px) { .wrap { grid-template-columns: minmax(0, 1fr); } .side { display: none; } }
@@ -229,7 +237,8 @@ footer a { color: var(--ink-2); }
   .search { max-width: none; flex-basis: 100%; }
   .bar { position: static; }
   .bar-inner, .wrap, footer { padding-left: 16px; padding-right: 16px; }
-  .tabs { gap: 22px; }
+  .savedlink { margin-left: auto; padding: 0 10px; }
+  .search { order: 3; }
   .filters { gap: 6px; }
   .toggle { font-size: 12.5px; gap: 4px; }
   .toggle .long { display: none; }
@@ -259,14 +268,13 @@ footer a { color: var(--ink-2); }
   <label class="search"><span class="sr">記事を検索</span>
     <input id="q" type="search" placeholder="キーワードで探す（例：人的資本、賃上げ、生成AI）" autocomplete="off"><kbd>/</kbd>
   </label>
+  <button class="savedlink" data-go="saved" aria-label="保存した記事を見る">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"/></svg>
+    <span>保存</span><span class="n" id="savedN"></span>
+  </button>
 </div></header>
 
 <div class="bar"><div class="bar-inner">
-  <div class="tabs" role="tablist" aria-label="表示">
-    <button class="tab" role="tab" data-mode="new">新着</button>
-    <button class="tab" role="tab" data-mode="hot">話題</button>
-    <button class="tab" role="tab" data-mode="saved">保存<span class="n" id="savedN"></span></button>
-  </div>
   <div class="filters">
     <div class="periods" role="group" aria-label="期間">
       <button data-p="d1">24時間</button><button data-p="d7">7日間</button><button data-p="d30">30日間</button>
@@ -276,7 +284,7 @@ footer a { color: var(--ink-2); }
       <div class="chips" id="chips" role="group" aria-label="媒体で絞り込む"></div>
       <button class="nav" id="chipNext" aria-label="右へ移動"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
     </div>
-    <label class="toggle"><input type="checkbox" id="unread">未読<span class="long">のみ</span></label>
+    <label class="toggle"><input type="checkbox" id="unread"><span>未読<span class="long">のみ</span></span></label>
   </div>
 </div></div>
 
@@ -422,14 +430,14 @@ function rowHTML(it, i) {
 }
 function render() {
   document.body.className = `mode-${S.mode}${matchMedia("(hover: none)").matches ? " touch" : ""}`;
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.mode === S.mode));
+  $(".savedlink").setAttribute("aria-pressed", S.mode === "saved");
   document.querySelectorAll(".periods button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === S.period));
   $("#savedN").textContent = savedSet.size ? savedSet.size : "";
   renderChips();
   const list = currentList();
   S.list = list.map(it => it.id);
   const main = $("#main");
-  if (!list.length) { main.innerHTML = emptyHTML(); renderSide(); return; }
+  if (!list.length) { main.innerHTML = (S.mode !== "new" ? `<button class="back" data-go="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>新着に戻る</button>` : "") + emptyHTML(); renderSide(); return; }
   let html = "";
   if (S.mode === "new") {
     html += stripHTML();
@@ -449,6 +457,7 @@ function render() {
     if (open) html += "</ul></section>";
     if (list.length > S.limit) html += `<button class="more" data-more>さらに表示（残り${list.length - S.limit}件）</button>`;
   } else {
+    html += `<button class="back" data-go="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>新着に戻る</button>`;
     if (S.mode === "hot") html += `<h2 class="day"><span>${PERIOD_LABEL[S.period]}でよく読まれている記事</span><span>${list.length}件</span></h2>`;
     else html += `<h2 class="day"><span>保存した記事</span><span>${list.length}件</span></h2>`;
     html += `<ul class="list${S.mode === "hot" ? " hot" : ""}">${list.slice(0, S.mode === "hot" ? 50 : 500).map(rowHTML).join("")}</ul>`;
@@ -584,9 +593,8 @@ document.addEventListener("click", (e) => {
   if (t.closest("[data-reset]")) { S.topic = null; S.src = ""; S.q = ""; S.unread = false; $("#q").value = ""; $("#unread").checked = false; render(); return; }
   const row = t.closest("[data-id]"); if (row && !t.closest("a")) openItem(row.dataset.id);
 });
-document.querySelectorAll(".tab").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 document.querySelectorAll(".periods button").forEach(b => b.onclick = () => { S.period = b.dataset.p; render(); });
-function setMode(m) { S.mode = m; S.limit = PAGE; if (S.open) closeItem(); render(); window.scrollTo({ top: 0 }); }
+function setMode(m) { if (m === S.mode && m === "saved") m = "new"; S.mode = m; S.limit = PAGE; if (S.open) closeItem(); render(); window.scrollTo({ top: 0 }); }
 $("#q").addEventListener("input", (e) => { S.q = e.target.value.trim(); S.limit = PAGE; render(); });
 $("#unread").addEventListener("change", (e) => { S.unread = e.target.checked; render(); });
 $("#scrim").onclick = () => closeItem();
