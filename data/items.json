@@ -1,5 +1,50 @@
 [
  {
+  "id": "ccce4d8ab8223e5e",
+  "title": "ダウ コーニング社の多次元組織成功への条件",
+  "url": "https://dhbr.diamond.jp/articles/-/14434",
+  "source": "DIAMONDハーバード・ビジネス・レビュー",
+  "category": "雑誌",
+  "published": "2026-11-27T12:00+09:00",
+  "found_at": "2026-11-27T14:52+09:00",
+  "desc": "意思決定が下部に下され、コミュニケーションが改善され、革新に多くの重点がおかれる。",
+  "enrich_tries": 1,
+  "image": "https://dhbr2.ismcdn.jp/common/images/ogp_logo.jpg",
+  "img_checked": true,
+  "read_min": 2,
+  "tags": [
+   "組織開発"
+  ],
+  "enriched_at": "2026-11-27T14:52+09:00",
+  "hb_hist": [
+   [
+    "2026-11-27T14:52+09:00",
+    0
+   ]
+  ],
+  "hb": 0,
+  "buzz": {
+   "d1": 0.0,
+   "d7": 0.0,
+   "d30": 0.0
+  },
+  "signals": {
+   "d1": {
+    "hb": 0,
+    "rank": null
+   },
+   "d7": {
+    "hb": 0,
+    "rank": null
+   },
+   "d30": {
+    "hb": 0,
+    "rank": null
+   }
+  },
+  "heat": 0
+ },
+ {
   "id": "c54888f076db72a9",
   "title": "転職動向調査2025年版（2024年実績）",
   "url": "https://jinjibu.jp/news/detl/24888/",
