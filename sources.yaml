@@ -11,6 +11,7 @@ sources:
     url: https://jinjibu.jp/news/
     link_pattern: '^https://jinjibu\.jp/news/detl/\d+/'
     title_strip: '^ニュース\s+'
+    exclude_pattern: '[?&](rclk|search)='   # サイドのランキング欄のリンクは新着扱いしない
     category: 人事情報サイト
 
   - name: 日本の人事部（記事）
@@ -18,6 +19,7 @@ sources:
     url: https://jinjibu.jp/article/
     link_pattern: '^https://jinjibu\.jp/article/detl/[\w-]+/\d+/'
     title_strip: '^記事\s+'
+    exclude_pattern: '[?&](rclk|search)='
     category: 人事情報サイト
 
   - name: HRプロ（トレンドニュース）
@@ -106,3 +108,18 @@ sources:
     type: rss
     url: https://note.com/aotatsutomu/rss
     category: コミュニティ
+
+# ── メディア公式のアクセスランキング（話題度に使う） ───────────
+#  url のページから link_pattern に合うリンクを上から順に読み、順位として記録する
+#  section_heading を書くと、その見出しのブロック内だけを読む
+rankings:
+  - name: 日本の人事部 ニュースアクセスランキング
+    label: 日本の人事部 アクセスランキング
+    url: https://jinjibu.jp/
+    link_pattern: '^https://jinjibu\.jp/news/detl/\d+/\?rclk=sd_nw_rank'
+
+  - name: HRog 人気記事ランキング
+    label: HRog 人気記事ランキング
+    url: https://hrog.net/
+    section_heading: 人気記事ランキング
+    link_pattern: '^https://hrog\.net/[a-z]+/\d+/'

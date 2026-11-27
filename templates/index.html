@@ -2,125 +2,600 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HR News Digest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HR News Digest｜人事のニュースと、いま話題の記事</title>
+<meta name="description" content="人事系メディアの新着記事を集め、概要・要約と話題度をひと目で。">
+<meta name="theme-color" content="#1E4D45">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f6f5f1; --surface: #ffffff; --ink: #1d1d1b; --sub: #6b6a64; --line: #e4e2db;
-    --accent: #1f5c4a; --accent-soft: #e3eee9; --warn: #a14a1a;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #161615; --surface: #1f1f1d; --ink: #ecebe6; --sub: #9c9a92; --line: #33332f;
-            --accent: #7cc4a8; --accent-soft: #23332d; --warn: #e0905e; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
-         line-height: 1.6; -webkit-font-smoothing: antialiased; }
-  header { padding: 40px 20px 20px; max-width: 880px; margin: 0 auto; }
-  h1 { font-size: 26px; letter-spacing: .02em; margin: 0 0 4px; }
-  .updated { color: var(--sub); font-size: 13px; }
-  .controls { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent);
-              backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-  .controls-inner { max-width: 880px; margin: 0 auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 10px; }
-  input[type=search] { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px;
-                       background: var(--surface); color: var(--ink); font-size: 15px; }
-  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
-  .chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-          padding: 5px 12px; border-radius: 999px; font-size: 13px; cursor: pointer; white-space: nowrap; }
-  .chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  main { max-width: 880px; margin: 0 auto; padding: 8px 20px 60px; }
-  .day { margin-top: 28px; }
-  .day h2 { font-size: 13px; font-weight: 600; color: var(--sub); letter-spacing: .06em; margin: 0 0 8px; }
-  ul { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-  li + li { border-top: 1px solid var(--line); }
-  li a { display: block; padding: 14px 16px; color: inherit; text-decoration: none; }
-  li a:hover { background: var(--accent-soft); }
-  .title { font-size: 15.5px; font-weight: 500; }
-  .meta { margin-top: 4px; font-size: 12px; color: var(--sub); display: flex; gap: 8px; flex-wrap: wrap; }
-  .src { color: var(--accent); font-weight: 600; }
-  .new { background: var(--accent); color: var(--bg); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
-  .empty { color: var(--sub); text-align: center; padding: 48px 0; }
-  details { margin-top: 40px; font-size: 13px; color: var(--sub); }
-  details table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  details td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
-  details a { color: var(--accent); }
-  .err { color: var(--warn); }
+:root {
+  --paper: #F1F3F2; --surface: #FFFFFF; --ink: #1F2A27; --ink-2: #55615D; --ink-3: #85908C;
+  --line: #DCE2DF; --pine: #1E4D45; --pine-soft: #E2ECE9; --focus: #2F7FD8;
+  --h0: #D3DAD7; --h1: #F2C14E; --h2: #F0913C; --h3: #E0553A; --h4: #B3203A;
+  --radius-row: 10px; --radius-sheet: 18px;
+  --font: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #151B19; --surface: #1D2522; --ink: #E7ECEA; --ink-2: #AAB5B1; --ink-3: #7B8783;
+          --line: #2C3734; --pine: #7CC2B0; --pine-soft: #22332F; --h0: #3A4542; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font);
+       font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ── ヘッダー ── */
+.top { max-width: 1180px; margin: 0 auto; padding: 22px 20px 10px; display: flex; align-items: center; gap: 20px; }
+.brand { display: flex; flex-direction: column; line-height: 1.25; flex: none; text-decoration: none; }
+.brand b { font-size: 21px; letter-spacing: .01em; }
+.brand span { font-size: 12px; color: var(--ink-3); }
+.search { flex: 1; max-width: 520px; margin-left: auto; position: relative; }
+.search input { width: 100%; height: 42px; padding: 0 40px 0 14px; border-radius: 999px; border: 1px solid var(--line);
+                background: var(--surface); font: inherit; color: var(--ink); }
+.search kbd { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font: 12px var(--font);
+              color: var(--ink-3); border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; }
+.search input:focus + kbd, .touch .search kbd { display: none; }
+
+/* ── 操作バー ── */
+.bar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--paper) 90%, transparent);
+       backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); }
+.bar-inner { max-width: 1180px; margin: 0 auto; padding: 8px 20px 10px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { border: 0; background: none; padding: 10px 14px 9px; font-weight: 700; color: var(--ink-3); cursor: pointer;
+       border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tab[aria-selected=true] { color: var(--ink); border-bottom-color: var(--pine); }
+.tab .n { font-weight: 400; font-size: 12px; margin-left: 4px; }
+.filters { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; mask-image: linear-gradient(90deg, #000 92%, transparent); }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); padding: 4px 12px; border-radius: 999px;
+        font-size: 13px; cursor: pointer; white-space: nowrap; }
+.chip[aria-pressed=true] { background: var(--pine); border-color: var(--pine); color: var(--surface); }
+.sel { flex: none; height: 32px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px;
+       font: 13px var(--font); padding: 0 8px; max-width: 180px; }
+.toggle { flex: none; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.toggle input { accent-color: var(--pine); width: 16px; height: 16px; }
+.periods { display: none; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 3px; flex: none; }
+.periods button { border: 0; background: none; padding: 3px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+.periods button[aria-pressed=true] { background: var(--pine-soft); color: var(--ink); font-weight: 700; }
+.mode-hot .periods { display: flex; }
+
+/* ── レイアウト ── */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 6px 20px 80px; display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 40px; }
+.side { position: sticky; top: 132px; align-self: start; }
+.mode-hot .side, .mode-saved .side { display: none; }
+.mode-hot .wrap, .mode-saved .wrap { grid-template-columns: minmax(0, 760px); }
+@media (max-width: 1000px) { .wrap { grid-template-columns: minmax(0, 1fr); } .side { display: none; } }
+
+/* ── 記事行 ── */
+.day { margin: 22px 0 8px; font-size: 13px; color: var(--ink-3); font-weight: 700; display: flex; justify-content: space-between; }
+.list { list-style: none; margin: 0; padding: 0; }
+.row { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px 14px 14px 20px;
+       background: var(--surface); border-radius: var(--radius-row); margin-bottom: 6px; cursor: pointer;
+       border: 1px solid transparent; }
+.row::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 5px; border-radius: 0 4px 4px 0; background: var(--hc, var(--h0)); }
+.row:hover { border-color: var(--line); }
+.row.active { border-color: var(--pine); }
+.row[data-heat="1"] { --hc: var(--h1); } .row[data-heat="2"] { --hc: var(--h2); }
+.row[data-heat="3"] { --hc: var(--h3); } .row[data-heat="4"] { --hc: var(--h4); }
+.meta { grid-column: 1 / -1; display: flex; gap: 10px; align-items: baseline; font-size: 12px; color: var(--ink-3); min-width: 0; }
+.meta .src { color: var(--pine); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.title { margin: 0; font-size: 16px; line-height: 1.55; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.read .title { color: var(--ink-2); font-weight: 400; }
+.unread-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pine); display: inline-block; flex: none; align-self: center; }
+.read .unread-dot { display: none; }
+.digest { grid-column: 1; margin: 0; font-size: 13.5px; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.foot { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.tag { background: var(--pine-soft); color: var(--ink-2); padding: 0 8px; border-radius: 4px; }
+.sig { color: var(--ink-2); }
+.sig.hot { color: var(--h3); font-weight: 700; }
+.save { grid-column: 2; grid-row: 2 / span 3; align-self: start; border: 0; background: none; width: 36px; height: 36px; border-radius: 8px;
+        cursor: pointer; color: var(--ink-3); display: grid; place-items: center; }
+.save:hover { background: var(--pine-soft); }
+.save[aria-pressed=true] { color: var(--pine); }
+.save svg { width: 20px; height: 20px; }
+
+/* ── 話題ランキング ── */
+.hot .row { grid-template-columns: 52px 1fr auto; padding-left: 16px; }
+.hot .rank { grid-row: 1 / span 4; font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.hot .rank.top { color: var(--hc, var(--ink)); }
+.hot .meta, .hot .digest, .hot .foot, .hot .title { grid-column: 2; }
+.hot .save { grid-column: 3; grid-row: 1 / span 3; }
+.why { font-size: 12.5px; color: var(--ink-2); grid-column: 2; display: flex; gap: 8px; flex-wrap: wrap; }
+.why b { color: var(--h3); }
+
+/* ── サイド：いま話題 ── */
+.side h2 { font-size: 14px; margin: 22px 0 10px; display: flex; justify-content: space-between; align-items: baseline; }
+.side h2 button { border: 0; background: none; color: var(--pine); font-size: 12.5px; cursor: pointer; padding: 0; }
+.mini { list-style: none; margin: 0; padding: 0; counter-reset: r; }
+.mini li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.mini li::before { counter-increment: r; content: counter(r); font-weight: 700; font-size: 17px; color: var(--hc, var(--ink-3)); font-variant-numeric: tabular-nums; }
+.mini .t { font-size: 13.5px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.mini .s { font-size: 11.5px; color: var(--ink-3); }
+.legend { margin-top: 16px; font-size: 12px; color: var(--ink-3); }
+.scale { display: flex; gap: 3px; margin: 6px 0 4px; }
+.scale i { flex: 1; height: 6px; border-radius: 3px; }
+.scale-l { display: flex; justify-content: space-between; }
+
+/* モバイルの話題ストリップ */
+.strip { display: none; }
+@media (max-width: 1000px) {
+  .mode-new .strip { display: block; margin: 14px -20px 4px; }
+  .strip h2 { font-size: 14px; margin: 0 20px 8px; display: flex; justify-content: space-between; }
+  .strip h2 button { border: 0; background: none; color: var(--pine); font-size: 12.5px; padding: 0; }
+  .strip ol { list-style: none; margin: 0; padding: 0 20px 4px; display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; counter-reset: r; }
+  .strip ol::-webkit-scrollbar { display: none; }
+  .strip li { flex: 0 0 74%; scroll-snap-align: start; background: var(--surface); border-radius: var(--radius-row); padding: 12px 14px;
+              border-top: 5px solid var(--hc, var(--h0)); cursor: pointer; }
+  .strip li::before { counter-increment: r; content: counter(r) "位"; font-size: 12px; font-weight: 700; color: var(--ink-3); }
+  .strip .t { font-size: 14px; font-weight: 700; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0 6px; }
+  .strip .s { font-size: 11.5px; color: var(--ink-3); }
+}
+
+/* ── 詳細パネル ── */
+.scrim { position: fixed; inset: 0; background: rgb(10 20 17 / .38); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+.scrim.on { opacity: 1; pointer-events: auto; }
+.sheet { position: fixed; z-index: 50; background: var(--surface); display: flex; flex-direction: column;
+         top: 0; right: 0; bottom: 0; width: min(520px, 100vw); transform: translateX(100%); transition: transform .26s cubic-bezier(.2,.8,.2,1);
+         box-shadow: -12px 0 40px rgb(0 0 0 / .14); }
+.sheet.on { transform: none; }
+@media (max-width: 760px) {
+  .sheet { top: auto; left: 0; width: 100%; height: 88dvh; border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; transform: translateY(100%); box-shadow: 0 -8px 30px rgb(0 0 0 / .16); }
+  .grab { display: block !important; }
+}
+.grab { display: none; width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 8px auto 0; flex: none; }
+.sheet-head { display: flex; align-items: center; gap: 4px; padding: 10px 12px; border-bottom: 1px solid var(--line); flex: none; }
+.sheet-head .pos { font-size: 12px; color: var(--ink-3); margin-right: auto; padding-left: 6px; }
+.icon { border: 0; background: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; cursor: pointer; color: var(--ink-2); }
+.icon:hover { background: var(--pine-soft); }
+.icon[aria-pressed=true] { color: var(--pine); }
+.icon svg { width: 21px; height: 21px; }
+.icon:disabled { opacity: .3; cursor: default; }
+.sheet-body { overflow-y: auto; padding: 20px 24px 28px; overscroll-behavior: contain; flex: 1; }
+.d-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-3); }
+.d-meta .src { color: var(--pine); font-weight: 700; }
+.d-title { font-size: 21px; line-height: 1.55; margin: 8px 0 12px; }
+.d-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.d-tags .tag { font-size: 12px; cursor: pointer; border: 0; }
+.blk { margin: 0 0 22px; }
+.blk h3 { font-size: 13px; color: var(--ink-3); margin: 0 0 6px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.blk h3 small { font-weight: 400; }
+.digest-big { font-size: 16.5px; font-weight: 700; line-height: 1.6; margin: 0 0 22px; padding-left: 12px; border-left: 4px solid var(--pine); }
+.points { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.points li { position: relative; padding-left: 18px; line-height: 1.75; }
+.points li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 7px; height: 7px; border-radius: 50%; background: var(--pine); }
+.desc { margin: 0; color: var(--ink-2); line-height: 1.85; }
+.buzz { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.buzz div { background: var(--paper); border-radius: 10px; padding: 10px 12px; }
+.buzz b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.buzz span { font-size: 11.5px; color: var(--ink-3); }
+.thermo { display: flex; gap: 3px; margin-top: 10px; }
+.thermo i { flex: 1; height: 8px; border-radius: 4px; background: var(--h0); }
+.note { font-size: 12px; color: var(--ink-3); margin: 8px 0 0; }
+.sheet-foot { flex: none; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); display: flex; gap: 8px; }
+.btn { flex: 1; height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; cursor: pointer;
+       display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 15px; }
+.btn.primary { background: var(--pine); border-color: var(--pine); color: var(--surface); flex: 2; }
+.btn svg { width: 18px; height: 18px; }
+
+/* ── その他 ── */
+.empty { text-align: center; color: var(--ink-2); padding: 60px 10px; }
+.empty b { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; }
+.more { display: block; margin: 16px auto 0; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 22px; cursor: pointer; font-size: 14px; }
+footer { max-width: 1180px; margin: 0 auto; padding: 0 20px 60px; font-size: 12.5px; color: var(--ink-3); }
+footer details { border-top: 1px solid var(--line); padding-top: 14px; }
+footer summary { cursor: pointer; }
+footer table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+footer td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+footer a { color: var(--pine); }
+.err { color: var(--h3); }
+.keys { margin-top: 12px; }
+.keys kbd { font: 11.5px var(--font); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; background: var(--surface); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink); color: var(--paper);
+         padding: 10px 18px; border-radius: 10px; font-size: 14px; opacity: 0; transition: .2s; z-index: 60; pointer-events: none; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.skeleton .row { height: 104px; background: linear-gradient(90deg, var(--surface), var(--pine-soft), var(--surface)); background-size: 200% 100%; animation: sk 1.2s infinite; }
+@keyframes sk { to { background-position: -200% 0; } }
+@media (max-width: 640px) {
+  .bar { position: static; }
+  .top { padding: 16px 16px 6px; flex-wrap: wrap; gap: 10px; }
+  .search { max-width: none; flex-basis: 100%; }
+  .bar-inner, .wrap, footer { padding-left: 16px; padding-right: 16px; }
+  .filters { flex-wrap: wrap; }
+  .chips { flex-basis: 100%; order: 3; }
+  .row { padding: 13px 10px 13px 18px; }
+  .title { font-size: 15.5px; }
+  .hot .row { grid-template-columns: 38px 1fr auto; }
+  .hot .rank { font-size: 24px; }
+  .sheet-body { padding: 16px 18px 24px; }
+  .d-title { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>HR News Digest</h1>
-  <div class="updated" id="updated"></div>
+<header class="top">
+  <a class="brand" href="./"><b>HR News Digest</b><span id="updated">読み込み中…</span></a>
+  <label class="search"><span class="sr">記事を検索</span>
+    <input id="q" type="search" placeholder="キーワードで探す（例：人的資本、賃上げ、生成AI）" autocomplete="off"><kbd>/</kbd>
+  </label>
 </header>
-<div class="controls"><div class="controls-inner">
-  <input type="search" id="q" placeholder="キーワードで絞り込み（例：採用、評価制度、AI）">
-  <div class="chips" id="cats"></div>
-  <div class="chips" id="srcs"></div>
+
+<div class="bar"><div class="bar-inner">
+  <div class="tabs" role="tablist" aria-label="表示">
+    <button class="tab" role="tab" data-mode="new">新着</button>
+    <button class="tab" role="tab" data-mode="hot">話題</button>
+    <button class="tab" role="tab" data-mode="saved">保存<span class="n" id="savedN"></span></button>
+  </div>
+  <div class="filters">
+    <div class="periods" role="group" aria-label="期間">
+      <button data-p="d1">24時間</button><button data-p="d7">7日間</button><button data-p="d30">30日間</button>
+    </div>
+    <div class="chips" id="topics" role="group" aria-label="トピック"></div>
+    <select class="sel" id="src" aria-label="媒体で絞り込む"></select>
+    <label class="toggle"><input type="checkbox" id="unread">未読のみ</label>
+  </div>
 </div></div>
-<main id="list"></main>
-<main><details id="status"><summary>収集元とステータス</summary><table id="srcTable"></table></details></main>
+
+<div class="wrap">
+  <main id="main" aria-live="polite">
+    <ul class="list skeleton"><li class="row"></li><li class="row"></li><li class="row"></li><li class="row"></li></ul>
+  </main>
+  <aside class="side" aria-label="いま話題">
+    <h2>いま話題 <button data-go="hot">ランキングを見る</button></h2>
+    <ol class="mini" id="mini"></ol>
+    <div class="legend">
+      <div>話題度（左端の色）</div>
+      <div class="scale"><i style="background:var(--h0)"></i><i style="background:var(--h1)"></i><i style="background:var(--h2)"></i><i style="background:var(--h3)"></i><i style="background:var(--h4)"></i></div>
+      <div class="scale-l"><span>静か</span><span>よく読まれている</span></div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <details><summary>話題度の決め方と収集元</summary>
+    <p>話題度は、はてなブックマーク数の伸びと、各メディア公式のアクセスランキング順位から算出しています。記事そのもののPVは公開されていないため、外から見える反応を代わりに使っています。要約はAIが作成したものです。正確な内容は元記事でご確認ください。</p>
+    <table id="srcTable"></table>
+    <p class="keys">ショートカット：<kbd>/</kbd> 検索　<kbd>J</kbd><kbd>K</kbd> 移動　<kbd>Enter</kbd> 開く　<kbd>O</kbd> 元記事　<kbd>S</kbd> 保存　<kbd>Esc</kbd> 閉じる</p>
+  </details>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle" hidden>
+  <div class="grab"></div>
+  <div class="sheet-head">
+    <span class="pos" id="dPos"></span>
+    <button class="icon" id="dPrev" aria-label="前の記事"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button class="icon" id="dNext" aria-label="次の記事"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    <button class="icon" id="dClose" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="sheet-body" id="dBody"></div>
+  <div class="sheet-foot">
+    <button class="btn" id="dSave"></button>
+    <button class="btn" id="dCopy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>コピー</button>
+    <a class="btn primary" id="dOpen" target="_blank" rel="noopener">元記事を読む</a>
+  </div>
+</section>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
-const DATA = /*__DATA__*/null;
-const state = { q: "", cat: "すべて", src: null };
-const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const WEEK = ["日","月","火","水","木","金","土"];
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ICON_SAVE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
+const ICON_SAVED = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
+const PERIOD_LABEL = { d1: "24時間", d7: "7日間", d30: "30日間" };
+const PAGE = 60;
 
-// 日付はデータ側のJST表記（YYYY-MM-DD…）で揃える。閲覧者のタイムゾーンに左右されないように
-const jstDay = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
-function dayLabel(iso) {
-  const key = iso.slice(0, 10);
+// ── 端末内の保存（使えない環境でも動くように） ──
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const readSet = new Set(store.get("hrnd.read", []));
+const savedList = store.get("hrnd.saved", []);
+const savedSet = new Set(savedList);
+const persist = () => { store.set("hrnd.read", [...readSet].slice(-3000)); store.set("hrnd.saved", [...savedSet]); };
+
+const S = { mode: "new", period: "d1", topic: null, src: "", q: "", unread: false, limit: PAGE, open: null, list: [] };
+let DATA, ITEMS, BY_ID;
+
+// ── 時刻 ──
+const now = () => Date.now();
+function rel(iso) {
+  const t = Date.parse(iso), m = Math.round((now() - t) / 6e4);
+  if (m < 60) return `${Math.max(1, m)}分前`;
+  if (m < 60 * 24) return `${Math.round(m / 60)}時間前`;
+  const d = new Date(t + 9 * 3600e3);
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
+}
+const jstKey = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
+function dayLabel(key) {
   const [y, m, d] = key.split("-").map(Number);
-  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-  const diff = Math.round((Date.parse(jstDay(Date.now())) - Date.parse(key)) / 864e5);
-  const base = `${m}月${d}日（${WEEK[wd]}）`;
-  return diff === 0 ? `今日 · ${base}` : diff === 1 ? `昨日 · ${base}` : base;
+  const wd = "日月火水木金土"[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  const diff = Math.round((Date.parse(jstKey(now())) - Date.parse(key)) / 864e5);
+  const base = `${m}月${d}日（${wd}）`;
+  return diff === 0 ? `今日　${base}` : diff === 1 ? `昨日　${base}` : base;
 }
+const dateText = (it) => it.date_unknown ? "日付不明" : (() => { const d = new Date(Date.parse(it.published) + 9 * 3600e3); return `${d.getUTCFullYear()}年${d.getUTCMonth()+1}月${d.getUTCDate()}日`; })();
 
-function chips(el, values, current, onPick) {
-  el.innerHTML = values.map(v => `<button class="chip" aria-pressed="${v === current}">${esc(v)}</button>`).join("");
-  [...el.children].forEach((b, i) => b.onclick = () => onPick(values[i]));
-}
-
-function render() {
-  const items = DATA.items;
-  const cats = ["すべて", ...new Set(items.map(i => i.category).filter(Boolean))];
-  chips($("cats"), cats, state.cat, v => { state.cat = v; state.src = null; render(); });
-  const inCat = items.filter(i => state.cat === "すべて" || i.category === state.cat);
-  const srcs = [...new Set(inCat.map(i => i.source))];
-  chips($("srcs"), srcs, state.src, v => { state.src = state.src === v ? null : v; render(); });
-
-  const q = state.q.trim().toLowerCase();
-  const shown = inCat.filter(i => (!state.src || i.source === state.src) &&
-                                  (!q || i.title.toLowerCase().includes(q) || i.source.toLowerCase().includes(q)));
-  if (!shown.length) { $("list").innerHTML = `<p class="empty">該当する記事はありません</p>`; return; }
-
-  const recent = Date.now() - 36 * 3600e3;
-  const groups = new Map();
-  for (const it of shown.slice(0, 400)) {
-    const key = dayLabel(it.published);
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(it);
+// ── 絞り込み ──
+function matches(it) {
+  if (S.topic && !(it.tags || []).includes(S.topic)) return false;
+  if (S.src && it.source !== S.src) return false;
+  if (S.unread && readSet.has(it.id)) return false;
+  if (S.q) {
+    const hay = `${it.title} ${it.digest || ""} ${it.desc || ""} ${(it.summary || []).join(" ")} ${it.source} ${(it.tags || []).join(" ")}`.toLowerCase();
+    if (!S.q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w))) return false;
   }
-  $("list").innerHTML = [...groups].map(([day, its]) => `
-    <section class="day"><h2>${esc(day)}</h2><ul>
-      ${its.map(it => `<li><a href="${esc(it.url)}" target="_blank" rel="noopener">
-        <div class="title">${esc(it.title)}</div>
-        <div class="meta"><span class="src">${esc(it.source)}</span>
-          ${new Date(it.found_at) > recent ? '<span class="new">NEW</span>' : ""}</div>
-      </a></li>`).join("")}
-    </ul></section>`).join("");
+  return true;
+}
+const isFresh = (it) => it.origin !== "ranking" || (!it.date_unknown && now() - Date.parse(it.published) < 3 * 864e5);
+function hotList(period, filtered = true) {
+  return ITEMS.filter(it => (it.buzz?.[period] || 0) > 0 && (!filtered || matches(it)))
+              .sort((a, b) => b.buzz[period] - a.buzz[period] || Date.parse(b.published) - Date.parse(a.published));
+}
+function currentList() {
+  if (S.mode === "hot") return hotList(S.period);
+  if (S.mode === "saved") return savedList.filter(id => savedSet.has(id)).map(id => BY_ID[id]).filter(Boolean).filter(matches).reverse();
+  return ITEMS.filter(it => isFresh(it) && matches(it));
 }
 
-$("updated").textContent = `最終更新 ${DATA.meta.updated}（${DATA.items.length}件）`;
-$("srcTable").innerHTML = DATA.meta.sources.map(s => `<tr>
-  <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></td>
-  <td>${esc(s.category)}</td>
-  <td>${!s.enabled ? "停止中" : s.error ? `<span class="err">${esc(s.error)}</span>` : "OK"}</td></tr>`).join("");
-$("q").addEventListener("input", e => { state.q = e.target.value; render(); });
-render();
+// ── 描画 ──
+function signalText(it, period, short) {
+  const s = it.signals?.[period] || {}, out = [];
+  if (s.rank) out.push(short ? `${it.rank?.label?.split(" ")[0] || "媒体"}${s.rank}位` : `${esc(it.rank?.label || "媒体ランキング")} <b>${s.rank}位</b>`);
+  if (s.hb) out.push(short ? `はてブ+${s.hb}` : `はてブ <b>+${s.hb}</b>`);
+  return out;
+}
+function rowHTML(it, i) {
+  const saved = savedSet.has(it.id), hot = S.mode === "hot";
+  const tags = (it.tags || []).slice(0, 2).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  const sig = hot ? "" : (it.hb ? `<span class="sig${it.heat >= 3 ? " hot" : ""}">はてブ ${it.hb}</span>` : "") +
+                        (it.rank ? `<span class="sig hot">${esc(it.rank.label.split(" ")[0])} ${it.rank.rank}位</span>` : "");
+  return `<li class="row${readSet.has(it.id) ? " read" : ""}" data-id="${it.id}" data-heat="${it.heat || 0}" tabindex="0">
+    ${hot ? `<span class="rank${i < 3 ? " top" : ""}">${i + 1}</span>` : ""}
+    <div class="meta"><span class="unread-dot" aria-label="未読"></span><span class="src">${esc(it.source)}</span><span>${it.date_unknown ? "" : rel(it.published)}</span></div>
+    <h2 class="title">${esc(it.title)}</h2>
+    ${it.digest ? `<p class="digest">${esc(it.digest)}</p>` : ""}
+    ${hot ? `<div class="why">${signalText(it, S.period).join("")}</div>` : ""}
+    <div class="foot">${tags}${it.read_min ? `<span>約${it.read_min}分</span>` : ""}${sig}</div>
+    <button class="save" aria-pressed="${saved}" aria-label="${saved ? "保存を外す" : "保存する"}" data-save="${it.id}">${saved ? ICON_SAVED : ICON_SAVE}</button>
+  </li>`;
+}
+function render() {
+  document.body.className = `mode-${S.mode}${matchMedia("(hover: none)").matches ? " touch" : ""}`;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.mode === S.mode));
+  document.querySelectorAll(".periods button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === S.period));
+  $("#savedN").textContent = savedSet.size ? savedSet.size : "";
+  renderTopics();
+  const list = currentList();
+  S.list = list.map(it => it.id);
+  const main = $("#main");
+  if (!list.length) { main.innerHTML = emptyHTML(); renderSide(); return; }
+  let html = "";
+  if (S.mode === "new") {
+    html += stripHTML();
+    let day = "";
+    const shown = list.slice(0, S.limit);
+    let open = false;
+    shown.forEach((it, i) => {
+      const k = it.published.slice(0, 10);
+      if (k !== day) {
+        if (open) html += "</ul>";
+        const n = list.filter(x => x.published.slice(0, 10) === k).length;
+        html += `<h2 class="day"><span>${dayLabel(k)}</span><span>${n}件</span></h2><ul class="list">`;
+        day = k; open = true;
+      }
+      html += rowHTML(it, i);
+    });
+    if (open) html += "</ul>";
+    if (list.length > S.limit) html += `<button class="more" data-more>さらに表示（残り${list.length - S.limit}件）</button>`;
+  } else {
+    if (S.mode === "hot") html += `<h2 class="day"><span>${PERIOD_LABEL[S.period]}でよく読まれている記事</span><span>${list.length}件</span></h2>`;
+    else html += `<h2 class="day"><span>保存した記事</span><span>${list.length}件</span></h2>`;
+    html += `<ul class="list${S.mode === "hot" ? " hot" : ""}">${list.slice(0, S.mode === "hot" ? 50 : 500).map(rowHTML).join("")}</ul>`;
+  }
+  main.innerHTML = html;
+  if (S.open) main.querySelector(`[data-id="${S.open}"]`)?.classList.add("active");
+  renderSide();
+}
+function emptyHTML() {
+  if (S.mode === "saved" && !savedSet.size) return `<div class="empty"><b>保存した記事はまだありません</b>気になる記事のしおりを押すと、ここにまとまります。保存はこの端末のブラウザに残ります。</div>`;
+  if (S.mode === "hot" && !hotList(S.period, false).length) return `<div class="empty"><b>${PERIOD_LABEL[S.period]}で話題の記事はまだありません</b>はてなブックマークや各メディアのランキングに動きがあると、ここに並びます。期間を広げてみてください。</div>`;
+  return `<div class="empty"><b>条件に合う記事がありません</b><button class="more" data-reset>絞り込みを解除する</button></div>`;
+}
+function stripHTML() {
+  if (S.q || S.topic || S.src) return "";
+  const top = hotList("d1", false).slice(0, 5);
+  const list = top.length >= 3 ? top : hotList("d7", false).slice(0, 5);
+  if (!list.length) return "";
+  return `<section class="strip"><h2>いま話題 <button data-go="hot">すべて見る</button></h2><ol>${list.map(it =>
+    `<li data-id="${it.id}" style="--hc:var(--h${it.heat || 0})"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.source)}　${signalText(it, top.length >= 3 ? "d1" : "d7", true).join("　")}</div></li>`).join("")}</ol></section>`;
+}
+function renderSide() {
+  let p = "d1", list = hotList("d1", false);
+  if (list.length < 5) { p = "d7"; list = hotList("d7", false); }
+  $("#mini").innerHTML = list.slice(0, 7).map(it => `<li data-id="${it.id}" style="--hc:var(--h${it.heat || 0})"><div><div class="t">${esc(it.title)}</div><div class="s">${esc(it.source)}　${signalText(it, p, true).join("　")}</div></div></li>`).join("")
+    || `<li style="cursor:default"><div class="s">話題のデータが集まると、ここに表示されます。</div></li>`;
+}
+function renderTopics() {
+  const base = ITEMS.filter(it => S.mode !== "new" || isFresh(it));
+  const counts = {};
+  base.forEach(it => (it.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
+  const topics = DATA.topics.filter(t => counts[t]);
+  $("#topics").innerHTML = `<button class="chip" aria-pressed="${!S.topic}" data-topic="">すべて</button>` +
+    topics.map(t => `<button class="chip" aria-pressed="${S.topic === t}" data-topic="${esc(t)}">${esc(t)}</button>`).join("");
+}
+
+// ── 詳細パネル ──
+function openItem(id, push = true) {
+  const it = BY_ID[id]; if (!it) return;
+  S.open = id;
+  readSet.add(id); persist();
+  const idx = S.list.indexOf(id);
+  const ctx = S.mode === "hot" ? "hot" : "new";
+  const sigs = it.signals || {};
+  const thermo = [1, 2, 3, 4].map(n => `<i style="${(it.heat || 0) >= n ? `background:var(--h${n})` : ""}"></i>`).join("");
+  const summary = (it.summary || []).length
+    ? `<div class="blk"><h3>要約<small>AIが作成</small></h3><ul class="points">${it.summary.map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>` : "";
+  const desc = it.desc ? `<div class="blk"><h3>概要<small>${esc(it.source)}より</small></h3><p class="desc">${esc(it.desc)}</p></div>` : "";
+  const none = !summary && !desc ? `<div class="blk"><p class="desc">この記事には概要がありません。内容は元記事でご確認ください。</p></div>` : "";
+  $("#dBody").innerHTML = `
+    <div class="d-meta"><span class="src">${esc(it.source)}</span><span>${dateText(it)}</span>${it.read_min ? `<span>約${it.read_min}分で読めます</span>` : ""}</div>
+    <h2 class="d-title" id="dTitle">${esc(it.title)}</h2>
+    <div class="d-tags">${(it.tags || []).map(t => `<button class="tag" data-topic="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+    ${it.digest ? `<p class="digest-big">${esc(it.digest)}</p>` : ""}
+    ${summary}${desc}${none}
+    <div class="blk"><h3>話題度</h3>
+      <div class="buzz">
+        <div><b>${it.hb ?? "—"}</b><span>はてなブックマーク</span></div>
+        <div><b>${sigs.d1?.hb ? "+" + sigs.d1.hb : "—"}</b><span>24時間の増加</span></div>
+        <div><b>${it.rank ? it.rank.rank + "位" : "—"}</b><span>${it.rank ? esc(it.rank.label) : "媒体ランキング"}</span></div>
+      </div>
+      <div class="thermo" aria-label="話題度 ${it.heat || 0} / 4">${thermo}</div>
+      ${it.hb ? `<p class="note"><a href="https://b.hatena.ne.jp/entry/s/${esc(it.url.replace(/^https?:\/\//, ""))}" target="_blank" rel="noopener">はてなブックマークのコメントを見る</a></p>` : ""}
+    </div>`;
+  $("#dPos").textContent = idx >= 0 ? `${idx + 1} / ${S.list.length}` : "";
+  $("#dPrev").disabled = idx <= 0; $("#dNext").disabled = idx < 0 || idx >= S.list.length - 1;
+  $("#dOpen").href = it.url;
+  setSaveBtn(it.id);
+  const sheet = $("#sheet");
+  if (sheet.hidden) { sheet.hidden = false; requestAnimationFrame(() => { sheet.classList.add("on"); $("#scrim").classList.add("on"); }); }
+  $("#dBody").scrollTop = 0;
+  document.querySelectorAll(".row.active").forEach(r => r.classList.remove("active"));
+  const row = document.querySelector(`.row[data-id="${id}"]`);
+  if (row) { row.classList.add("active", "read"); row.scrollIntoView({ block: "nearest" }); }
+  const hash = `#a=${id}`;
+  if (push && location.hash !== hash) history[location.hash.startsWith("#a=") ? "replaceState" : "pushState"]({ a: id }, "", hash);
+  $("#dClose").focus({ preventScroll: true });
+}
+function closeItem(fromPop = false) {
+  if (!S.open) return;
+  const id = S.open; S.open = null;
+  $("#sheet").classList.remove("on"); $("#scrim").classList.remove("on");
+  setTimeout(() => { if (!S.open) $("#sheet").hidden = true; }, 260);
+  if (!fromPop && location.hash.startsWith("#a=")) history.back();
+  document.querySelector(`.row[data-id="${id}"]`)?.focus({ preventScroll: true });
+  if (S.unread) render();
+}
+function step(d) {
+  const i = S.list.indexOf(S.open) + d;
+  if (i >= 0 && i < S.list.length) openItem(S.list[i], false);
+}
+function setSaveBtn(id) {
+  const on = savedSet.has(id);
+  $("#dSave").innerHTML = (on ? ICON_SAVED : ICON_SAVE) + (on ? "保存済み" : "保存");
+  $("#dSave").setAttribute("aria-pressed", on);
+}
+function toggleSave(id) {
+  if (savedSet.has(id)) { savedSet.delete(id); toast("保存を外しました"); }
+  else { savedSet.add(id); savedList.push(id); toast("保存しました"); }
+  const i = savedList.indexOf(id); if (!savedSet.has(id) && i >= 0) savedList.splice(i, 1);
+  persist();
+  if (S.open === id) setSaveBtn(id);
+  const keep = S.open; render(); if (keep) document.querySelector(`.row[data-id="${keep}"]`)?.classList.add("active");
+}
+let toastT;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 1600); }
+
+// ── 操作 ──
+document.addEventListener("click", (e) => {
+  const t = e.target;
+  const save = t.closest("[data-save]"); if (save) { e.stopPropagation(); toggleSave(save.dataset.save); return; }
+  const go = t.closest("[data-go]"); if (go) { setMode(go.dataset.go); return; }
+  const topic = t.closest("[data-topic]");
+  if (topic) { S.topic = topic.dataset.topic || null; S.limit = PAGE; if (S.open) closeItem(); render(); return; }
+  if (t.closest("[data-more]")) { S.limit += PAGE * 2; render(); return; }
+  if (t.closest("[data-reset]")) { S.topic = null; S.src = ""; S.q = ""; S.unread = false; $("#q").value = ""; $("#src").value = ""; $("#unread").checked = false; render(); return; }
+  const row = t.closest("[data-id]"); if (row && !t.closest("a")) openItem(row.dataset.id);
+});
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+document.querySelectorAll(".periods button").forEach(b => b.onclick = () => { S.period = b.dataset.p; render(); });
+function setMode(m) { S.mode = m; S.limit = PAGE; if (S.open) closeItem(); render(); window.scrollTo({ top: 0 }); }
+$("#q").addEventListener("input", (e) => { S.q = e.target.value.trim(); S.limit = PAGE; render(); });
+$("#src").addEventListener("change", (e) => { S.src = e.target.value; render(); });
+$("#unread").addEventListener("change", (e) => { S.unread = e.target.checked; render(); });
+$("#scrim").onclick = () => closeItem();
+$("#dClose").onclick = () => closeItem();
+$("#dPrev").onclick = () => step(-1);
+$("#dNext").onclick = () => step(1);
+$("#dSave").onclick = () => S.open && toggleSave(S.open);
+$("#dCopy").onclick = async () => {
+  const it = BY_ID[S.open]; if (!it) return;
+  const text = `${it.title}\n${it.url}`;
+  try { await navigator.clipboard.writeText(text); toast("タイトルとURLをコピーしました"); }
+  catch { toast("コピーできませんでした"); }
+};
+window.addEventListener("popstate", () => {
+  const m = location.hash.match(/^#a=(\w+)/);
+  if (m) openItem(m[1], false); else closeItem(true);
+});
+document.addEventListener("keydown", (e) => {
+  if (e.target.matches("input, select, textarea")) { if (e.key === "Escape") e.target.blur(); return; }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const rows = [...document.querySelectorAll("#main .row")];
+  const cur = document.activeElement?.closest?.(".row");
+  const k = e.key.toLowerCase();
+  if (k === "/") { e.preventDefault(); $("#q").focus(); }
+  else if (k === "escape") closeItem();
+  else if (S.open && (k === "arrowright" || k === "j")) { e.preventDefault(); step(1); }
+  else if (S.open && (k === "arrowleft" || k === "k")) { e.preventDefault(); step(-1); }
+  else if (k === "j" || k === "k") {
+    e.preventDefault();
+    const i = cur ? rows.indexOf(cur) + (k === "j" ? 1 : -1) : 0;
+    rows[Math.max(0, Math.min(rows.length - 1, i))]?.focus();
+  }
+  else if ((k === "enter" || k === " ") && cur) { e.preventDefault(); openItem(cur.dataset.id); }
+  else if (k === "o") { const id = S.open || cur?.dataset.id; if (id) { readSet.add(id); persist(); window.open(BY_ID[id].url, "_blank", "noopener"); } }
+  else if (k === "s") { const id = S.open || cur?.dataset.id; if (id) toggleSave(id); }
+});
+// スマホ：シートを下にスワイプで閉じる
+(() => {
+  let y0 = null;
+  const sheet = $("#sheet"), body = $("#dBody");
+  sheet.addEventListener("touchstart", (e) => { y0 = (body.scrollTop <= 0 || !body.contains(e.target)) ? e.touches[0].clientY : null; }, { passive: true });
+  sheet.addEventListener("touchmove", (e) => {
+    if (y0 === null) return;
+    const dy = e.touches[0].clientY - y0;
+    if (dy > 0 && matchMedia("(max-width: 760px)").matches) sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+  sheet.addEventListener("touchend", (e) => {
+    if (y0 === null) return;
+    const dy = e.changedTouches[0].clientY - y0; y0 = null; sheet.style.transform = "";
+    if (dy > 110 && matchMedia("(max-width: 760px)").matches) closeItem();
+  });
+})();
+
+// ── 起動 ──
+function renderSources() {
+  const f = DATA.features || {};
+  $("#srcTable").innerHTML = DATA.sources.map(s => `<tr><td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></td><td>${esc(s.category)}</td>
+    <td>${!s.enabled ? "停止中" : s.error ? `<span class="err">${esc(s.error)}</span>` : "取得できています"}</td></tr>`).join("") +
+    `<tr><td>はてなブックマーク</td><td>話題度</td><td>${f.hatena_error ? `<span class="err">${esc(f.hatena_error)}</span>` : "取得できています"}</td></tr>` +
+    `<tr><td>AI要約</td><td>要約</td><td>${f.ai ? "有効" : "未設定（概要のみ表示）"}</td></tr>`;
+}
+fetch("data.json?v=__DATA_VERSION__").then(r => r.json()).then(d => {
+  DATA = d;
+  ITEMS = d.items.slice().sort((a, b) => b.published.localeCompare(a.published));
+  BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+  const sources = [...new Set(ITEMS.map(i => i.source))];
+  $("#src").innerHTML = `<option value="">すべての媒体</option>` + sources.map(s => `<option>${esc(s)}</option>`).join("");
+  const dt = new Date(Date.parse(d.updated) + 9 * 3600e3);
+  $("#updated").textContent = `${dt.getUTCMonth() + 1}月${dt.getUTCDate()}日 ${String(dt.getUTCHours()).padStart(2, "0")}:${String(dt.getUTCMinutes()).padStart(2, "0")} 更新`;
+  renderSources();
+  render();
+  const m = location.hash.match(/^#a=(\w+)/);
+  if (m && BY_ID[m[1]]) { history.replaceState(null, "", location.pathname); history.pushState({ a: m[1] }, "", `#a=${m[1]}`); openItem(m[1], false); }
+}).catch(() => {
+  $("#main").innerHTML = `<div class="empty"><b>記事を読み込めませんでした</b>通信状況を確認して、ページを再読み込みしてください。</div>`;
+});
 </script>
 </body>
 </html>
