@@ -7017,7 +7017,16 @@
    }
   },
   "heat": 0,
-  "desc": "※イベントを認知拡大を図った投稿です。予めご了承ください。 実は、ルール廃止になるかも？という声が上がっていた時から計画をし、Facebookにはあげていたのですが、、、、 続きをみる"
+  "desc": "※イベントを認知拡大を図った投稿です。予めご了承ください。 実は、ルール廃止になるかも？という声が上がっていた時から計画をし、Facebookにはあげていたのですが、、、、 続きをみる",
+  "enrich_tries": 1,
+  "image": "https://assets.st-note.com/production/uploads/images/8181877/rectangle_large_type_2_77917fd51d2fa741a28899afa519ba51.jpg?fit=bounds&quality=85&width=1280",
+  "img_checked": true,
+  "read_min": 2,
+  "tags": [
+   "採用",
+   "キャリア"
+  ],
+  "enriched_at": "2026-11-27T11:20+09:00"
  },
  {
   "id": "04fcf696d98e4c95",
@@ -7047,7 +7056,17 @@
    }
   },
   "heat": 0,
-  "desc": "「わかっている」と「実行できる」は違う この言葉、僕が内定先の社員さんから勧められた本に書いてあったのですが(後から見たら割とネットに書いてあった)、就活時にこの言葉に出会えていたら、もう少し有意義な就活を送れていたのかなーと思ったりします。 続きをみる"
+  "desc": "「わかっている」と「実行できる」は違う この言葉、僕が内定先の社員さんから勧められた本に書いてあったのですが(後から見たら割とネットに書いてあった)、就活時にこの言葉に出会えていたら、もう少し有意義な就活を送れていたのかなーと思ったりします。 続きをみる",
+  "enrich_tries": 1,
+  "image": "https://assets.st-note.com/production/uploads/images/18713152/rectangle_large_type_2_4e948118236e068dd25ceca512bc7060.png?fit=bounds&quality=85&width=1280",
+  "img_checked": true,
+  "read_min": 4,
+  "tags": [
+   "採用",
+   "キャリア",
+   "HRテック・AI"
+  ],
+  "enriched_at": "2026-11-27T11:20+09:00"
  },
  {
   "id": "37806502590a310e",
@@ -7077,6 +7096,16 @@
    }
   },
   "heat": 0,
-  "desc": "自戒も含めて今回初めて投稿するのですが。 この時期になると、ベンチャー企業のインターンの集客をしたり、後輩のキャリア面談をする大学4年生がちらほら現れます。 続きをみる"
+  "desc": "自戒も含めて今回初めて投稿するのですが。 この時期になると、ベンチャー企業のインターンの集客をしたり、後輩のキャリア面談をする大学4年生がちらほら現れます。 続きをみる",
+  "enrich_tries": 1,
+  "image": "https://assets.st-note.com/production/uploads/images/18713495/rectangle_large_type_2_edb8cf9072a60e583bebde68950aa946.png?fit=bounds&quality=85&width=1280",
+  "img_checked": true,
+  "read_min": 2,
+  "tags": [
+   "採用",
+   "キャリア",
+   "育成・研修"
+  ],
+  "enriched_at": "2026-11-27T11:20+09:00"
  }
 ]
