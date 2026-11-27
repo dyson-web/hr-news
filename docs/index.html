@@ -88,9 +88,9 @@ a { color: inherit; }
 
 /* ── 記事行（白地・罫線区切り・右サムネイル） ── */
 /* セクションラベル：小さく薄く、すぐ下のリストに寄せる */
-.day, .side h2, .strip h2 { font-size: 14px; font-weight: 500; color: var(--ink-3); letter-spacing: .03em; }
+.day, .side h2, .strip h2 { font-size: 16px; font-weight: 700; color: var(--ink-3); letter-spacing: .02em; }
 .day { margin: 0; padding: 30px 0 0; display: flex; gap: 10px; align-items: baseline; }
-.day span + span { font-size: 12px; font-weight: 400; color: var(--ink-3); opacity: .8; }
+.day span + span { font-size: 12.5px; font-weight: 400; color: var(--ink-3); opacity: .8; }
 .day + .list > .row:first-child { padding-top: 10px; }
 .dayg + .dayg { margin-top: 16px; }
 .list { list-style: none; margin: 0; padding: 0; }
@@ -659,7 +659,7 @@ function renderSources() {
     `<tr><td>はてなブックマーク</td><td>話題度</td><td>${f.hatena_error ? `<span class="err">${esc(f.hatena_error)}</span>` : "取得できています"}</td></tr>` +
     `<tr><td>AI要約</td><td>要約</td><td>${f.ai ? "有効" : "未設定（概要のみ表示）"}</td></tr>`;
 }
-fetch("data.json?v=01111be675").then(r => r.json()).then(d => {
+fetch("data.json?v=d47a0e852d").then(r => r.json()).then(d => {
   DATA = d;
   ITEMS = d.items.slice().sort((a, b) => b.published.localeCompare(a.published));
   BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
