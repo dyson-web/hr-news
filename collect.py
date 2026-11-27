@@ -139,9 +139,13 @@ def parse_iso(s: str) -> datetime:
     return datetime.fromisoformat(s).astimezone(JST)
 
 
+FEED_BOILERPLATE = re.compile(r"\s*(\[(…|&#8230;|\.\.\.)\]|続きを読む|The post ).*$|\s*投稿\s.*に最初に表示されました。?$")
+
+
 def clean_text(s: str, limit: int | None = None) -> str:
     s = BeautifulSoup(s or "", "html.parser").get_text(" ") if "<" in (s or "") else (s or "")
     s = re.sub(r"\s+", " ", s).strip()
+    s = FEED_BOILERPLATE.sub("…", s).strip() if FEED_BOILERPLATE.search(s) else s
     if limit and len(s) > limit:
         s = s[:limit].rstrip("、。 ") + "…"
     return s
@@ -294,6 +298,7 @@ def extract_article(html: bytes) -> dict:
         return ""
 
     desc = clean_text(meta("og:description", "description", "twitter:description"), 220)
+    image = meta("og:image", "og:image:url", "twitter:image", "twitter:image:src")
     published = meta("article:published_time", "pubdate", "date")
     if not published:
         t = soup.find("time", attrs={"datetime": True})
@@ -307,7 +312,7 @@ def extract_article(html: bytes) -> dict:
         if len(text) > len(best_text):
             best_text = text
     best_text = re.sub(r"[ \t]+", " ", best_text).strip()
-    return {"desc": desc, "published": published, "text": best_text}
+    return {"desc": desc, "published": published, "text": best_text, "image": image}
 
 
 def guess_tags(text: str) -> list[str]:
@@ -362,8 +367,14 @@ def enrich(item: dict, api_key: str | None) -> None:
     text = ""
     try:
         if allowed_by_robots(item["url"]):
-            art = extract_article(fetch(item["url"]).content)
+            resp = fetch(item["url"])
+            art = extract_article(resp.content)
             text = art["text"]
+            if art["image"] and not item.get("image"):
+                img = urljoin(resp.url, art["image"])
+                if img.startswith("https://"):
+                    item["image"] = img
+            item["img_checked"] = True
             if not item.get("desc") and art["desc"]:
                 item["desc"] = art["desc"]
             if item.get("date_unknown") and art["published"]:
@@ -377,7 +388,7 @@ def enrich(item: dict, api_key: str | None) -> None:
         item["enrich_error"] = f"{type(e).__name__}"[:80]
     if not item.get("tags"):
         item["tags"] = guess_tags(f"{item['title']} {item.get('desc', '')} {text[:1500]}")
-    if api_key and (text or item.get("desc")):
+    if api_key and not item.get("ai") and (text or item.get("desc")):
         try:
             ai = ai_summarize(item, text, api_key)
             if ai:
@@ -392,9 +403,9 @@ def enrich(item: dict, api_key: str | None) -> None:
 
 
 def needs_enrich(item: dict, has_key: bool) -> bool:
-    if item.get("enrich_tries", 0) >= 3:
+    if item.get("enrich_tries", 0) >= 4:
         return False
-    if not item.get("enriched_at"):
+    if not item.get("enriched_at") or not item.get("img_checked"):
         return True
     return has_key and not item.get("ai") and item.get("enrich_tries", 0) < 2
 
@@ -481,6 +492,8 @@ def load_items() -> list[dict]:
         it["id"] = make_id(it["url"])
         if it["id"] in merged:
             continue
+        if it.get("desc"):
+            it["desc"] = clean_text(it["desc"])
         merged[it["id"]] = it
     return list(merged.values())
 
@@ -494,7 +507,7 @@ def save_items(items: list[dict]) -> list[dict]:
 
 
 PUBLIC_FIELDS = ("id", "title", "url", "source", "category", "published", "found_at", "desc", "digest",
-                 "summary", "tags", "read_min", "hb", "heat", "buzz", "signals", "origin", "ai", "date_unknown")
+                 "summary", "tags", "read_min", "image", "hb", "heat", "buzz", "signals", "origin", "ai", "date_unknown")
 
 
 def render_site(items: list[dict], sources: list[dict], rankings: list[dict], status: dict) -> None:

@@ -37,6 +37,7 @@ HROG_HOME = """<html><body><nav><a href="https://hrog.net/news/1/">ナビの記�
 </ul></section></body></html>""".encode()
 
 ARTICLE = """<html><head><meta property="og:description" content="記事の概要です。人的資本の開示が進む。">
+<meta property="og:image" content="/img/ogp.png">
 <meta property="article:published_time" content="2025-03-01T10:00:00+09:00"></head>
 <body><nav>メニュー</nav><article><h2>見出し</h2>""" + "<p>" + "本文の段落です。" * 80 + "</p></article></body></html>"
 
@@ -128,6 +129,7 @@ def test_end_to_end(tmp_path, monkeypatch):
     assert ranked["origin"] == "ranking" and ranked["published"].startswith("2025-03-01") and "date_unknown" not in ranked
     assert by_url["https://hrog.net/news/137448/"]["rank_hist"][0][1] == 2
     assert all(i.get("summary") == ["a", "b", "c"] for i in items)
+    assert by_url["https://hrog.net/news/137448/"]["image"] == "https://hrog.net/img/ogp.png"
     assert all(i.get("hb") == 7 for i in items if i["published"] > "2026-10")
 
     # 2回目：新着ゼロ、件数変わらず
